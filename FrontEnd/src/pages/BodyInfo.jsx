@@ -3,119 +3,70 @@ import styled from 'styled-components';
 import Input from '../styles/Input';
 import btn from '../styles/Button';
 
-const Mypage = () => {
+const BodyInfo = () => {
   return (
     <>
       <Content>
         <TitleBox>
-          <Title>마이페이지</Title>
+          <Title>나의 신체 정보</Title>
         </TitleBox>
         <Form>
           <Box>
             <InputGroup>
-              <InputName>아이디</InputName>
+              <InputName>몸무게(kg)</InputName>
               <InputText style={Input.InputGray} type="text" />
             </InputGroup>
             <InputGroup>
-              <InputName>비밀번호</InputName>
+              <InputName>키(cm)</InputName>
               <InputText style={Input.InputGray} type="text" />
             </InputGroup>
             <InputGroup>
-              <InputName>비밀번호 확인</InputName>
+              <InputName>체질량지수(BMI) (15.0 ~ 40.0)</InputName>
               <InputText style={Input.InputGray} type="text" />
             </InputGroup>
             <InputGroup>
-              <InputName>이메일</InputName>
+              <InputName>혈압 수치(수축기/이완기)</InputName>
               <InputText style={Input.InputGray} type="text" />
             </InputGroup>
             <InputGroup>
-              <InputName>이름</InputName>
+              <InputName>혈당 수치(mg/DL)</InputName>
               <InputText style={Input.InputGray} type="text" />
             </InputGroup>
           </Box>
           <Box>
             <InputGroup>
-              <InputName>주소</InputName>
+              <InputName>콜레스테롤 수치(mg/dL)</InputName>
               <InputText style={Input.InputGray} type="text" />
             </InputGroup>
             <InputGroup>
-              <InputName>나이</InputName>
+              <InputName>흡연습관</InputName>
+              <Select style={Input.InputGray}>
+                <option value="">선택하세요</option>
+                <option value="none">비흡연</option>
+                <option value="light">가끔 흡연</option>
+                <option value="regular">정기적으로 흡연</option>
+              </Select>
+            </InputGroup>
+            <InputGroup>
+              <InputName>음주 수준</InputName>
               <InputText style={Input.InputGray} type="text" />
             </InputGroup>
             <InputGroup>
-              <InputName>성별</InputName>
-              <RadioGroup>
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
-                남성
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
-                여성
-              </RadioGroup>
+              <InputName>신체 활동 수준</InputName>
+              <InputText style={Input.InputGray} type="text" />
             </InputGroup>
             <InputGroup>
-              <InputName>등록</InputName>
-              <RadioGroup>
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
-                직원
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
-                기업
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
-                워케이션 업체
-              </RadioGroup>
+              <InputName>평균 수면 시간</InputName>
+              <InputText style={Input.InputGray} type="text" />
             </InputGroup>
           </Box>
           <Box>
             <InputGroup>
-              <InputName>회사명</InputName>
+              <InputName>식단 유형</InputName>
               <InputText style={Input.InputGray} type="text" />
             </InputGroup>
             <InputGroup>
-              <InputName>부서명</InputName>
-              <InputText style={Input.InputGray} type="text" />
-            </InputGroup>
-            <InputGroup>
-              <InputName>직급</InputName>
-              <InputText style={Input.InputGray} type="text" />
-            </InputGroup>
-            <InputGroup>
-              <InputName>회사주소</InputName>
-              <InputText style={Input.InputGray} type="text" />
-            </InputGroup>
-            <InputGroup>
-              <InputName>회사 이메일</InputName>
-              <InputText style={Input.InputGray} type="text" />
-            </InputGroup>
-            <InputGroup>
-              <InputName>사내 전화번호</InputName>
+              <InputName>건강 상태</InputName>
               <InputText style={Input.InputGray} type="text" />
             </InputGroup>
           </Box>
@@ -130,6 +81,11 @@ const Mypage = () => {
     </>
   );
 };
+
+const Select = styled.select`
+  width: 250px;
+  height: 35px;
+`;
 const ButnContent = styled.div`
   width: 100%;
   display: flex;
@@ -141,12 +97,6 @@ const ButnBox = styled.div`
   width: 200px;
   display: flex;
   justify-content: space-between;
-`;
-
-const RadioGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
 `;
 
 const InputText = styled.input`
@@ -188,4 +138,4 @@ const InputName = styled.p`
   justify-content: left;
 `;
 
-export default Mypage;
+export default BodyInfo;

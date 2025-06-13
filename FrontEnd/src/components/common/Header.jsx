@@ -7,11 +7,11 @@ import { Link } from 'react-router-dom';
 const menuData = [
   {
     title: '심리검사',
-    path: '/test/',
+    path: '/trial',
     items: [
-      { title: '스트레스 검사', path: '/test/stress' },
-      { title: '번아웃 검사', path: '/test/burnout' },
-      { title: '성향 검사', path: '/test/tendency' },
+      { title: '스트레스 검사', path: '/trial/stress' },
+      { title: '번아웃 검사', path: '/trial/burnout' },
+      { title: '성향 검사', path: '/trial/tendency' },
     ],
   },
   {

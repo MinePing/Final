@@ -13,6 +13,8 @@ import SignUp from './pages/Login/SignUp';
 import Worcation from './pages/Worcation';
 
 import Mypage from './pages/Mypage';
+import BodyInfo from './pages/BodyInfo';
+import Trial from './pages/Trial';
 
 import MemberList from './pages/Member/MemberList';
 import LayoutMember from './components/LayoutMember';
@@ -29,9 +31,11 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/wrocation" element={<Worcation />} />
+            <Route path="/trial" element={<Trial />} />
           </Route>
           <Route element={<Layout2 />}>
             <Route path="/my/info" element={<Mypage />} />
+            <Route path="/my/body" element={<BodyInfo />} />
           </Route>
 
           <Route element={<LayoutMember />}>

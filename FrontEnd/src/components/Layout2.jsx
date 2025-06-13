@@ -19,6 +19,7 @@ const Content = styled.main`
   max-width: 1280px;
   margin: 0 auto;
   padding: 24px 16px;
+  height: calc(100vh - 190px);
 `;
 
 export default Layout2;

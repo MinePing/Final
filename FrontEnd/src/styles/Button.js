@@ -91,6 +91,31 @@ const btn = {
     cursor: 'pointer',
     filter: 'drop-shadow(4px 4px 4px rgba(0,0,0,0.25))',
   },
+  buttonWbShadow: {
+    background: '#ffffff',
+    borderRadius: '10px',
+    border: '1px solid rgb(223, 223, 223)',
+    fontFamily: 'Godo B',
+    fontStyle: 'normal',
+    fontWeight: 400,
+    fontSize: '20px',
+    lineHeight: '23px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    filter: 'drop-shadow(4px 4px 4px rgba(0,0,0,0.25))',
+  },
+  buttonWhite2: {
+    boxSizing: 'border-box',
+    background: '#ffffff',
+    fontFamily: 'Godo B',
+    fontStyle: 'normal',
+    fontWeight: 400,
+    fontSize: '20px',
+    color: '#000000',
+    cursor: 'pointer',
+  },
 };
 
 export default btn;

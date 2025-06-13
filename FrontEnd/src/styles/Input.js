@@ -17,10 +17,21 @@ const Input = {
     boxSizing: 'border-box',
     width: '340px',
     height: '48px',
-    background: '#FFFFFF',
+    background: `${({ theme }) => theme.colors.white}`,
     border: '3px solid #F8C470',
     borderRadius: '10px',
     color: 'black',
+  },
+  InputRadio: {
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    MozAppearance: 'none',
+    backgroundColor: '#adadad',
+    width: '18px',
+    height: '18px',
+    borderRadius: '50%',
+    marginLeft: '10px',
+    cursor: 'pointer',
   },
 };
 
