@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { ButtonBorder, ButtonDetail } from '../../../styles/Button.styles';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
 // import seoul1 from '../../../assets/seoul1.jpg';
 // import siheung1 from '../../../assets/siheung1.jpg';
 // import siheung2 from '../../../assets/siheung2.jpg';
