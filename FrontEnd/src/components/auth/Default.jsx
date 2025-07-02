@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CustomDatePicker from '../common/DatePicker';
 import styled from 'styled-components';
 
-const DefaultStep = ({ formData1, setFormData1, setSelectedRole,formData2, setFormData2 }) => {
+const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 }) => {
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
 
   useEffect(() => {

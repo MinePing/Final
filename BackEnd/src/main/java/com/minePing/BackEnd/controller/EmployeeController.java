@@ -38,4 +38,9 @@ public class EmployeeController {
     public ResponseEntity<List<CompanyProfileDto.Applies>> getWorcationApplies(@PathVariable Long companyNo){
         return ResponseEntity.ok(employeeService.findWorcationAppliesList(companyNo));
     }
+
+    @GetMapping("/employees-summary/{companyNo}")
+    public ResponseEntity<CompanyProfileDto.Employees> getEmployeesNumber(@PathVariable Long companyNo){
+        return ResponseEntity.ok(employeeService.findEmployeesNumber(companyNo));
+    }
 }

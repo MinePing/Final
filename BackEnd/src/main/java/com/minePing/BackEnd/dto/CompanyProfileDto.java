@@ -164,4 +164,23 @@ public class CompanyProfileDto {
 
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Employees {
+        private int totalEmployees;
+        private int worcationEmployees;
+        private int currentEmployees;
+
+        public static Employees toDto(int totalEmployees, int worcationEmployees, int currentEmployees) {
+            return Employees.builder()
+                    .totalEmployees(totalEmployees)
+                    .worcationEmployees(worcationEmployees)
+                    .currentEmployees(currentEmployees)
+                    .build();
+        }
+    }
+
 }

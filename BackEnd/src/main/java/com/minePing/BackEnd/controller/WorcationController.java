@@ -27,7 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api/worcations")
+@RequestMapping("api/v1/worcations")
 @RequiredArgsConstructor
 @Validated
 public class WorcationController {

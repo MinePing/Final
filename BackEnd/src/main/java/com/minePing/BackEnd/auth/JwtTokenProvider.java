@@ -27,8 +27,8 @@ public class JwtTokenProvider {
         this.SECRET_KEY = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(String email, CommonEnums.Role role) {
-        Claims claims = Jwts.claims().setSubject(email);
+    public String createToken(String userId, CommonEnums.Role role) {
+        Claims claims = Jwts.claims().setSubject(userId);
         claims.put("role", role);
 
         Date now = new Date();
@@ -42,7 +42,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getUserEmailFromToken() {
+    public String getUserIdFromToken() {
         //현재 요청의 JWT 토큰에서 이메일 추출
         //JwtTokenFilter에서 토큰 검증 후에 호출
         return SecurityContextHolder.getContext().getAuthentication().getName();

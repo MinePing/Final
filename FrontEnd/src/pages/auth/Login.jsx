@@ -1,37 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import loginBg from '../../assets/loginBgImg.jpg';
 import logo from '../../assets/LoginLogo.png';
 import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 import { Link, useNavigate } from 'react-router-dom';
-import useAuthStore from '../../store/authStore';
 import memberService from '../../api/members';
-import jwt_decode from 'jwt-decode';
+
+import useAuthStore from '../../store/authStore';
+
 
 const Login = () => {
   const [userId, setUserId] = useState('');
   const [userPwd, setUserPwd] = useState('');
   const navigate = useNavigate();
-  const { setUser } = useAuthStore();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const member = await memberService.login({ userId, userPwd });
-      const { token } = member;
-      console.log('로그인 응답 member:', member);
-      console.log('로그인 응답 token:', token);
-      const decodedToken = jwt_decode(token);
-      console.log('로그인 응답 decodedToken:', decodedToken);
+      const response = await memberService.login({ userId, userPwd });
+      const { token } = response;
+      localStorage.setItem('token', token);
+      await useAuthStore.getState().fetchUserInfo();
 
-      setUser(member);
       alert('로그인 성공!');
       navigate('/');
-    } catch (err) {
-      alert(err.message);
+    } catch (error) {
+      alert(`로그인 실패 : ${error}`);
     }
   };
+  useEffect(() => {
+    (async () => {
+      if (localStorage.getItem('token')) {
+        try {
+          await useAuthStore.getState().fetchUserInfo();
+          window.location.href = '/';
+        } catch (error) {
+          alert(`로그인 실패 : ${error}`);
+        }
+      }
+    })();
+  }, []);
+
   return (
     <LoginWrap>
       <ContentWrap>
@@ -60,10 +70,10 @@ const Login = () => {
               <SignInBtn type="submit">로그인</SignInBtn>
               <SignUpLink to="/signUp">회원가입</SignUpLink>
             </BtnFlex>
-            <div>
+            <button type="button">
               <br />
               구글 로그인 영역
-            </div>
+            </button>
           </form>
         </LoginCard>
       </ContentWrap>

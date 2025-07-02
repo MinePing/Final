@@ -1,31 +1,39 @@
 import React from 'react';
 import styled from 'styled-components';
-import Calender from '../common/Calendar';
+import Calender from './Calender/Calendar';
+
+import userIcon from '../../assets/User.png';
+import chillIcon from '../../assets/Chill.png';
+import tasksIcon from '../../assets/Tasks.png';
 
 const InfoListData = [
   {
-    icon: '아이콘',
+    icon: userIcon,
     title: '근무자',
     count: 100,
   },
-
   {
-    icon: '아이콘',
+    icon: chillIcon,
     title: '워케이션 근무자',
     count: 100,
   },
   {
-    icon: '아이콘',
+    icon: tasksIcon,
     title: '총 인원',
     count: 200,
   },
 ];
 
 const CalenderContainoer = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
   return (
     <Container>
       <DateHeader>
-        <DateHeaderTitle>2025년 6월</DateHeaderTitle>
+        <DateHeaderTitle>
+          {year}년 {month}월
+        </DateHeaderTitle>
       </DateHeader>
       <Contents>
         <Calender />
@@ -34,8 +42,10 @@ const CalenderContainoer = () => {
             {InfoListData.map((item, index) => (
               <InfoListLi key={index}>
                 <LeftInfo>
-                  <i>{item.icon}</i>
-                  <span>{item.title}</span>
+                  <i>
+                    <img src={item.icon} alt={item.title} />
+                  </i>
+                  <Title>{item.title}</Title>
                 </LeftInfo>
                 <RightInfo>
                   <span>{item.count}</span>
@@ -73,23 +83,18 @@ const DateHeaderTitle = styled.h1`
 const Contents = styled.div`
   width: 100%;
   max-height: 300px;
+  height: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: ${({ theme }) => theme.spacing.s4};
 `;
 
-// const Calender = styled.div`
-//   width: 60%;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// `;
 const InfoList = styled.div`
   width: 40%;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: ${({ theme }) => theme.colors.primary};
 `;
 const InfoListUl = styled.ul`
   width: 100%;
@@ -98,6 +103,7 @@ const InfoListUl = styled.ul`
   justify-content: space-between;
   align-items: stretch;
   padding: 12px;
+  gap: ${({ theme }) => theme.spacing.s4};
 `;
 const InfoListLi = styled.li`
   display: flex;
@@ -114,11 +120,15 @@ const LeftInfo = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.s6};
+  gap: ${({ theme }) => theme.spacing.s4};
 `;
 const RightInfo = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const Title = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes['xl']};
 `;
 export default CalenderContainoer;

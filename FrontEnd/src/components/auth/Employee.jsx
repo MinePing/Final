@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import memberService from '../../api/members';
 
-const EmployeeStep = ({formData1, setFormData1, formData2, setFormData2 }) => {
+const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [companySearchResults, setCompanySearchResults] = useState([]);
   const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
   const [positionList, setPositionList] = useState([]);

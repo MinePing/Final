@@ -144,4 +144,43 @@ public class MemberDto {
                     .build();
         }
     }
+
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ToString
+    public static class InfoResponse {
+        private Long user_no;
+        private String user_id;
+        private String user_name;
+        private Long company_no;
+        private CommonEnums.Role role;
+
+        public static InfoResponse toMemberDto(Member member) {
+            return InfoResponse.builder()
+                    .user_no(member.getUserNo())
+                    .user_id(member.getUserId())
+                    .user_name(member.getName())
+                    .role(member.getRole())
+                    .build();
+        }
+
+        public static InfoResponse toCompanyDto(Company company) {
+            return InfoResponse.builder()
+                    .company_no(company.getCompanyNo())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class KakaoLogin{
+        private String code;
+    }
 }

@@ -23,7 +23,7 @@ public class Amenity {
     @Column(name = "amenity_no")
     private Long amenityNo;
 
-    @Column(name = "amenity_name",nullable = false, length = 50, unique = false)
+    @Column(name = "amenity_name",nullable = false, length = 50, unique = true)
     private String amenityName;
 
     @OneToMany(mappedBy = "amenity", cascade = CascadeType.ALL, orphanRemoval = true)

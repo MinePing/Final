@@ -14,14 +14,16 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+
 @Table(
         name ="company",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_company_business_id", columnNames = "business_id"),
-                @UniqueConstraint(name = "uk_company_business_email", columnNames = "business_email"),
-                @UniqueConstraint(name = "uk_company_company_tel", columnNames = "company_tel")
+                @UniqueConstraint(name = "uk_business_id", columnNames = "business_id"),
+                @UniqueConstraint(name = "uk_business_email", columnNames = "business_email"),
+                @UniqueConstraint(name = "uk_company_tel", columnNames = "company_tel")
         }
 )
+
 public class Company {
 
     @Id

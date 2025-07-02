@@ -12,10 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-@Table(
-        name = "mental",
-        indexes = {@Index(name = "idx_member_application", columnList = "user_no")
-        })
+@Table(name = "mental", indexes = {@Index(name = "idx_member_application", columnList = "user_no")})
 public class Mental {
 
     @Id

@@ -2,12 +2,17 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.EmployeeJoin;
+import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
 import com.minePing.BackEnd.dto.MemberDto.Login;
+import com.minePing.BackEnd.dto.MemberDto.LoginResponse;
 import com.minePing.BackEnd.dto.MemberDto.MasterJoin;
 import com.minePing.BackEnd.dto.MemberDto.WorcationJoin;
 import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.CommonEnums.Role;
+import com.minePing.BackEnd.enums.SocialType;
 import com.minePing.BackEnd.exception.CompanyNotFoundException;
 import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.repository.CompanyProfileRepository;
@@ -109,5 +114,42 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return MemberDto.LoginResponse.toDto(member);
+    }
+
+    @Override
+    @Transactional
+    public InfoResponse getUserInfoByUserId(String userId) {
+        Member member = memberRepository.findByUserId(userId)
+                .orElseThrow(()->new UserNotFoundException("유저 정보를 찾을 수 없습니다."));
+        MemberDto.InfoResponse infoDto = MemberDto.InfoResponse.toMemberDto(member);
+        if(
+                member.getRole().equals(Role.MASTER) ||
+                member.getRole().equals(Role.MANAGER) ||
+                member.getRole().equals(Role.EMPLOYEE)
+        ) {
+            Long company_no= companyProfileRepository.getCompanyNoByUserNo(member.getUserNo())
+                            .orElseThrow(() -> new UserNotFoundException("회사 정보를 찾을 수 없습니다."));
+            infoDto.setCompany_no(company_no);
+        }
+        return infoDto;
+    }
+
+    @Override
+    public LoginResponse getMemberBySocialId(String socialId) {
+        Member member = memberRepository.findByUserId(socialId)
+                .orElseThrow(() -> new UserNotFoundException("카카오 로그인 회원 정보가 없습니다."));
+        return LoginResponse.toDto(member);
+    }
+
+    @Override
+    public Member createOauth(String socialId, String email, String name, SocialType socialType) {
+        Member member = Member.builder()
+                .email(email)
+                .name(name)
+                .userPwd("")
+                .phone(null)
+                .build();
+        memberRepository.save(member);
+        return member;
     }
 }

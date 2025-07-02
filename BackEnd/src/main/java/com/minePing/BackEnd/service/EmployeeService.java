@@ -13,4 +13,6 @@ public interface EmployeeService {
     List<CompanyProfileDto.Consult> findConsultList(Long companyNo);
 
     List<CompanyProfileDto.Applies> findWorcationAppliesList(Long companyNo);
+
+    CompanyProfileDto.Employees findEmployeesNumber(Long companyNo);
 }

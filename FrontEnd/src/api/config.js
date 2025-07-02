@@ -22,13 +22,17 @@ export const API_BUSINESS = {
 export const API_ENDPOINTS = {
   MEMBER: {
     SIGNUP: (role) => `/member/signUp/${role}`,
+    MY_INFO: '/member/userInfo',
   },
   COMPANY: {
     SEARCH: (company_name) => `/company/search?company_name=${company_name}`,
     DEPARTMENT_SEARCH: (company_no) => `/company/search/department/${company_no}`,
   },
   COMPANY_PROFILE: '/companyProfiles',
-  WORCATION: '/worcations',
+  WORCATION: {
+    LIST: '/worcations',
+    DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
+  },
   LOGIN: '/member/login',
   MENTALS: {
     STRESS: '/mental_stress',

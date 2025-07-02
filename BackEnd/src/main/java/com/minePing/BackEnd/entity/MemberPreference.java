@@ -14,12 +14,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+
 @Table(
         name = "member_preference",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_member_preference_user_no", columnNames = "user_no")
+                @UniqueConstraint(name = "uk_user_no", columnNames = "user_no")
         }
 )
+
 public class MemberPreference {
 
     @Id

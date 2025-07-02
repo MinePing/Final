@@ -16,11 +16,8 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "worcation_partner",
-            indexes = {
-                @Index(name = "idx_worcation_partner", columnList = "worcation_no"),
-                @Index(name = "idx_company_partner", columnList = "company_no")
-            }
-        )
+        indexes = {@Index(name = "idx_worcation_partner", columnList = "worcation_no")
+                ,@Index(name = "idx_company_partner", columnList = "company_no")})
 public class WorcationPartner {
 
     @Id
@@ -67,5 +64,4 @@ public class WorcationPartner {
             this.approve = Approve.W;
         }
     }
-
 }

@@ -2,6 +2,7 @@ package com.minePing.BackEnd.entity;
 
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
+import com.minePing.BackEnd.enums.SocialType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,14 +19,16 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+
 @Table(
         name = "member",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_member_user_id", columnNames = "user_id"),
-                @UniqueConstraint(name = "uk_member_email", columnNames = "email"),
-                @UniqueConstraint(name = "uk_member_phone", columnNames = "phone")
+                @UniqueConstraint(name = "uk_user_id", columnNames = "user_id"),
+                @UniqueConstraint(name = "uk_email", columnNames = "email"),
+                @UniqueConstraint(name = "uk_phone", columnNames = "phone")
         }
 )
+
 public class Member {
     @Id // PK
     @GeneratedValue(strategy = GenerationType.IDENTITY) // pk값 자동생성(AUTO_INCREMENT방식)
@@ -56,6 +59,11 @@ public class Member {
 
     @Column(name = "phone", nullable = false, length = 13, unique = true)
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType;
+
+    private String socialId;
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)

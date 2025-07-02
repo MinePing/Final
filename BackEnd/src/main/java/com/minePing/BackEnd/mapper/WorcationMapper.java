@@ -4,7 +4,11 @@ import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationDetail;
 import com.minePing.BackEnd.entity.WorcationFeatures;
+import com.minePing.BackEnd.entity.WorcationPartner;
+import com.minePing.BackEnd.entity.Review;
 import org.mapstruct.*;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface WorcationMapper {
@@ -38,5 +42,31 @@ public interface WorcationMapper {
     @Mapping(source = "features.bestFor", target = "best_for")
     @Mapping(source = "features.activities", target = "activities")
     @Mapping(source = "features.accommodationType", target = "accommodation_type")
-    WorcationDto.Response toResponse(Worcation worcation, WorcationDetail detail, WorcationFeatures features);
+    @Mapping(source = "partners", target = "partners")
+    @Mapping(source = "reviews", target = "reviews")
+    WorcationDto.Response toResponse(Worcation worcation, WorcationDetail detail, WorcationFeatures features, java.util.List<WorcationPartner> partners, java.util.List<Review> reviews);
+
+    @Mapping(source = "partnerNo", target = "partner_no")
+    @Mapping(source = "worcation.worcationNo", target = "worcation_no")
+    @Mapping(source = "member.userNo", target = "member_no")
+    @Mapping(source = "company.companyNo", target = "company_no")
+    @Mapping(source = "companyPeople", target = "company_people")
+    @Mapping(source = "startTime", target = "start_time")
+    @Mapping(source = "endTime", target = "end_time")
+    @Mapping(source = "approve", target = "approve")
+    @Mapping(source = "createAt", target = "create_at")
+    @Mapping(source = "updateAt", target = "update_at")
+    WorcationDto.PartnerResponse toPartnerResponse(WorcationPartner partner);
+
+    List<WorcationDto.PartnerResponse> toPartnerResponseList(List<WorcationPartner> partners);
+
+    @Mapping(source = "reviewNo", target = "review_no")
+    @Mapping(source = "worcationApplication.applicationNo", target = "application_no")
+    @Mapping(source = "writerId", target = "writer_id")
+    @Mapping(source = "reviewContent", target = "review_content")
+    @Mapping(source = "createAt", target = "create_at")
+    @Mapping(source = "updateAt", target = "update_at")
+    WorcationDto.ReviewResponse toReviewResponse(Review review);
+
+    List<WorcationDto.ReviewResponse> toReviewResponseList(java.util.List<Review> reviews);
 }

@@ -1,25 +1,27 @@
-import React from 'react'
+import React, { useState } from 'react';
 import LeftContent from '../../components/Member/LeftContent';
 import NeedsConsultTable from '../../components/Member/table/NeedsConsultTable';
 import styled from 'styled-components';
-import CalenderContainoer from '../../components/Member/CalenderContainoer';
+import MemberSearchBar from '../../components/Member/MemberSearchBar';
 
 const NeedsConsultList = () => {
-    return (
-        <MemberListWrap>  
-          <LeftNav>
-            <LeftContent />
-          </LeftNav>
-          <MainContent>
-          <CalenderContainoer />
-            <Title>상담 필요자</Title>
-            <Container>
-            <NeedsConsultTable />
-            </Container>
-          </MainContent>
-        </MemberListWrap>
-      );
-}
+  const [searchKeyword, setSearchKeyword] = useState('');
+
+  return (
+    <MemberListWrap>
+      <LeftNav>
+        <LeftContent />
+      </LeftNav>
+      <MainContent>
+        <Title>상담 필요자</Title>
+        <Container>
+          <MemberSearchBar onSearch={setSearchKeyword} />
+          <NeedsConsultTable searchKeyword={searchKeyword} />
+        </Container>
+      </MainContent>
+    </MemberListWrap>
+  );
+};
 
 const MemberListWrap = styled.div`
   display: flex;
@@ -62,5 +64,4 @@ const Container = styled.div`
   gap: ${({ theme }) => theme.spacing.s6};
 `;
 
-export default NeedsConsultList
-
+export default NeedsConsultList;

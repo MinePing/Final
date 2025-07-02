@@ -4,18 +4,20 @@ import { API_ENDPOINTS } from './config';
 //로그인
 const memberService = {
   login: async ({ userId, userPwd }) => {
-    const { data } = await axiosInstance.post(API_ENDPOINTS.LOGIN, {
-      user_id: userId,
-      user_pwd: userPwd,
-    });
+    try {
+      const response = await axiosInstance.post(API_ENDPOINTS.LOGIN, {
+        user_id: userId,
+        user_pwd: userPwd,
+      });
 
-    // 서버에서 JWT 토큰을 포함한 응답을 보내므로 data 구조가 다름
-    // data.token 형태로 응답이 올 것으로 예상
-    if (!data || !data.token) {
-      throw new Error('로그인에 실패했습니다.');
+      if (!response?.data?.token) {
+        throw new Error('로그인에 실패했습니다.');
+      }
+
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message;
     }
-
-    return data;
   },
 
   //회원가입
@@ -73,16 +75,9 @@ const memberService = {
         memberJoinDto: memberJoinDto,
       };
     }
+    console.log('payload', payload);
 
-    let result;
-
-    try {
-      const { data } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);
-      result = data;
-    } catch (error) {
-      throw error?.response?.data?.message;
-    }
-
+    const { data: result } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);
     return result;
   },
 
@@ -95,6 +90,16 @@ const memberService = {
   searchDepartment: async (company_no) => {
     const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY.DEPARTMENT_SEARCH(company_no));
     return data;
+  },
+
+  // 내 정보 조회 (JWT 토큰 사용)
+  getMyInfo: async () => {
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.MEMBER.MY_INFO);
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message;
+    }
   },
 };
 export default memberService;

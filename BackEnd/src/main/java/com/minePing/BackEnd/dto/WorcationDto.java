@@ -54,6 +54,36 @@ public class WorcationDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class PartnerResponse {
+        private Long partner_no;
+        private Long worcation_no;
+        private Long member_no;
+        private Long company_no;
+        private Integer company_people;
+        private LocalDate start_time;
+        private LocalDate end_time;
+        private com.minePing.BackEnd.enums.CommonEnums.Approve approve;
+        private LocalDateTime create_at;
+        private LocalDateTime update_at;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ReviewResponse {
+        private Long review_no;
+        private Long application_no;
+        private String writer_id;
+        private String review_content;
+        private java.time.LocalDateTime create_at;
+        private java.time.LocalDateTime update_at;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class Response {
         //Worcation
         private Long worcation_no;
@@ -93,5 +123,8 @@ public class WorcationDto {
 
         private List<String> amenities;
         private List<String> photo_urls;
+
+        private List<PartnerResponse> partners;
+        private List<ReviewResponse> reviews;
     }
 }

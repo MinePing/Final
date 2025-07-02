@@ -54,11 +54,11 @@ const menuData = [
 const Header = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
+  const loginUser = useAuthStore((state) => state.loginUser);
   const logout = useAuthStore((state) => state.logout);
 
   // 로그인 상태 판단 (user가 있으면 로그인된 상태)
-  const isLoggedIn = Boolean(user);
+  const isLoggedIn = Boolean(loginUser);
 
   // 메뉴 데이터 로그인 상태에 따라 변경
   const menus = menuData.map((menu) => {
@@ -66,7 +66,7 @@ const Header = () => {
       if (isLoggedIn) {
         return {
           ...menu,
-          title: user.name || '내 정보',
+          title: loginUser.user_name || '내 정보',
           path: '/my/info',
           items: [
             { title: '내 정보', path: '/my/info' },
@@ -102,7 +102,7 @@ const Header = () => {
                 <NavItem key={idx} className="nav-item">
                   {menu.title === '로그인' && !isLoggedIn ? (
                     <StyleLinkButton to="/login">{menu.title}</StyleLinkButton>
-                  ) : menu.title === (user?.name || '내 정보') && isLoggedIn ? (
+                  ) : menu.title === (loginUser?.user_name || '내 정보') && isLoggedIn ? (
                     <StyleLink to={menu.path}>{menu.title}</StyleLink>
                   ) : (
                     <StyleLink to={menu.path}>{menu.title}</StyleLink>

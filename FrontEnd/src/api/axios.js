@@ -14,6 +14,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log('config?.headers?.Authorization = ', config?.headers?.Authorization);
     return config;
   },
   (error) => {
@@ -45,16 +46,16 @@ api.interceptors.response.use(
           window.location.href = '/login';
           break;
         case 403:
-          console.error('접근권한이 없습니다.');
+          console.error(data?.message || '접근권한이 없습니다.');
           break;
         case 404:
-          console.error('요청한 리소스를 찾을 수 없습니다.');
+          console.error(data?.message || '요청한 리소스를 찾을 수 없습니다.');
           break;
         case 500:
-          console.error('서버 에러 발생');
+          console.error(data?.message || '서버 에러 발생');
           break;
         default:
-          console.error('API 에러 :', data);
+          console.error(data?.message || 'API 에러 :', data);
       }
     } else if (error.request) {
       //요청은 했지만 응답을 받지 못함

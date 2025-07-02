@@ -2,6 +2,7 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.CompanyProfileDto;
 import com.minePing.BackEnd.dto.CompanyProfileDto.Applies;
+import com.minePing.BackEnd.dto.CompanyProfileDto.Employees;
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.enums.MentalEnums;
 import com.minePing.BackEnd.repository.EmployeeRepository;
@@ -80,7 +81,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<Applies> findWorcationAppliesList(Long companyNo) {
         LocalDate today = LocalDate.now();
 
-        return employeeRepository.findallWorcationAppliesByCompanNo(companyNo).stream()
+        return employeeRepository.findallWorcationAppliesByCompanyNo(companyNo).stream()
                 .flatMap(profile -> {
                     Member member = profile.getMember();
                     int age = Period.between(member.getBirthday(), today).getYears();
@@ -94,5 +95,21 @@ public class EmployeeServiceImpl implements EmployeeService {
                             });
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Employees findEmployeesNumber(Long companyNo) {
+        LocalDate today = LocalDate.now();
+
+        // 1. 전체 인원 수
+        int total = employeeRepository.findAllByCompanyNo(companyNo).size();
+
+        // 2. 오늘 기준 워케이션 중인 인원 수 (레포지토리에서 카운트 메서드 사용)
+        int worcation = employeeRepository.countWorcationInProgressByCompanyNo(companyNo, today);
+
+        // 3. 현재 근무 중 인원
+        int current = total - worcation;
+
+        return Employees.toDto(total, worcation, current);
     }
 }

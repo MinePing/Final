@@ -14,11 +14,13 @@ import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationDetail;
 import com.minePing.BackEnd.entity.WorcationFeatures;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.WorcationPartner;
 import com.minePing.BackEnd.mapper.WorcationMapper;
 import com.minePing.BackEnd.repository.WorcationDetailRepository;
 import com.minePing.BackEnd.repository.WorcationFeaturesRepository;
 import com.minePing.BackEnd.repository.WorcationRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
+import com.minePing.BackEnd.repository.WorcationPartnerRepository;
 
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class WorcationServiceImpl implements WorcationService {
     private final WorcationFeaturesRepository featuresRepository;
     private final MemberRepository memberRepository;
     private final ApplicationRepository applicationRepository;
+    private final WorcationPartnerRepository partnerRepository;
     @Override
     @Transactional
     public WorcationDto.Response create(WorcationDto.Request request) {
@@ -82,7 +85,7 @@ public class WorcationServiceImpl implements WorcationService {
             .build();
         f = featuresRepository.save(f);
 
-        return mapper.toResponse(w, d, f);
+        return mapper.toResponse(w, d, f,List.of(),List.of());
     }
 
     @Override
@@ -92,7 +95,12 @@ public class WorcationServiceImpl implements WorcationService {
                 .orElseThrow(() -> new RuntimeException("Worcation not found: " + worcationNo));
         WorcationDetail d = detailRepository.findById(w.getWorcationNo()).orElse(null);
         WorcationFeatures f = featuresRepository.findById(w.getWorcationNo()).orElse(null);
-        return mapper.toResponse(w, d, f);
+        List<WorcationPartner> partners = partnerRepository.findByWorcation(w);
+        List<com.minePing.BackEnd.entity.Review> reviews = w.getWorcationApplications().stream()
+                .map(app -> app.getReview())
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toList());
+        return mapper.toResponse(w, d, f, partners, reviews);
     }
 
     @Override
@@ -102,7 +110,12 @@ public class WorcationServiceImpl implements WorcationService {
                 .map(w -> {
                     WorcationDetail d = detailRepository.findById(w.getWorcationNo()).orElse(null);
                     WorcationFeatures f = featuresRepository.findById(w.getWorcationNo()).orElse(null);
-                    return mapper.toResponse(w, d, f);
+                    List<WorcationPartner> partners = partnerRepository.findByWorcation(w);
+                    List<com.minePing.BackEnd.entity.Review> reviews = w.getWorcationApplications().stream()
+                            .map(app -> app.getReview())
+                            .filter(java.util.Objects::nonNull)
+                            .collect(java.util.stream.Collectors.toList());
+                    return mapper.toResponse(w, d, f, partners, reviews);
                 })
                 .collect(Collectors.toList());
     }
@@ -129,7 +142,7 @@ public class WorcationServiceImpl implements WorcationService {
                 .orElseThrow(() -> new RuntimeException("WorcationFeatures not found: " + worcationNo));
         patchWorcationFeatures(request, existingFeatures);
 
-        return mapper.toResponse(existing, existingDetail, existingFeatures);
+        return mapper.toResponse(existing, existingDetail, existingFeatures,List.of(),List.of());
     }
 
     // 커스텀 매퍼: DTO의 null이 아닌 값만 엔티티에 반영

@@ -40,12 +40,15 @@ public class SecurityConfig {
                                 "/api/v1/member/login",
                                 "/api/v1/member/signUp/WORCATION",
                                 "/api/v1/member/signUp/MASTER",
+
                                 "/api/v1/member/signUp/EMPLOYEE",
                                 "/api/v1/company/search",
-                                "/api/v1/company/search/department/**"
+                                "/api/v1/company/search/department/**",
+                                "/api/v1/member/kakao/login"
                         )
+
                         .permitAll() // 이 API 허용
-                        .anyRequest().permitAll() // or 필요한 경우만 제한
+                        .anyRequest().authenticated() // or 필요한 경우만 제한
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
