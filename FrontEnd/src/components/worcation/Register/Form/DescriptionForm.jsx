@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import CustomTextArea from '../../../common/TextArea';
 import useWorcationStore from '../../../../store/useWorcationStore';
-import { ButtonBorder } from '../../../../styles/Button.styles';
 
 const Form = () => {
   const description = useWorcationStore((state) => state.description);
