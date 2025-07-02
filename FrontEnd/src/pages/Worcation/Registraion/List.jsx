@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ButtonBorder, ButtonDetail } from '../../../styles/Button.styles';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import useWorcationStore from '../../../store/useWorcationStore';
 // import seoul1 from '../../../assets/seoul1.jpg';
 // import siheung1 from '../../../assets/siheung1.jpg';
 // import siheung2 from '../../../assets/siheung2.jpg';
@@ -83,14 +83,14 @@ const WorcationHistory = () => {
         const data = res.data;
 
         // 필요한 형태로 데이터 파싱
-        worcationStore.setApplication(data.application);
-        worcationStore.setInfo(data.info);
-        worcationStore.setDescription(data.description);
-        worcationStore.setPhotos(data.photos);
-        worcationStore.setAmenities(data.amenities);
-        worcationStore.setLocation(data.location);
-        worcationStore.setPolicy(data.policy);
-        worcationStore.setFeature(data.feature);
+        useWorcationStore.setApplication(data.application);
+        useWorcationStore.setInfo(data.info);
+        useWorcationStore.setDescription(data.description);
+        useWorcationStore.setPhotos(data.photos);
+        useWorcationStore.setAmenities(data.amenities);
+        useWorcationStore.setLocation(data.location);
+        useWorcationStore.setPolicy(data.policy);
+        useWorcationStore.setFeature(data.feature);
       });
     }
   }, [id]);
