@@ -44,7 +44,8 @@ public class SecurityConfig {
                                 "/api/v1/member/signUp/EMPLOYEE",
                                 "/api/v1/company/search",
                                 "/api/v1/company/search/department/**",
-                                "/api/v1/member/kakao/login"
+                                "/api/v1/member/kakao/login",
+                                "/**"
                         )
 
                         .permitAll() // 이 API 허용
