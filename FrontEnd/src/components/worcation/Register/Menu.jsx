@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import FolderIcon from '../../common/Folder.jsx';
-// import useWorcationStore from '../../../store/useWorcationStore.js';
-import useBusinessStore from '../../../store/useBusinessStore.js';
+import useWorcationStore from '../../../store/useWorcationStore.js';
 
 const Menu = ({ onMenuSelect, selectedMenu }) => {
-  const isVerified = useBusinessStore((state) => state.isVerified);
-  const setIsVerified = useBusinessStore((state) => state.setIsVerified);
+  const isValidate = useWorcationStore((state) => state.isValidate);
 
   const menuItems = [
     { id: 'Info', label: '업체 정보' },
@@ -17,10 +15,6 @@ const Menu = ({ onMenuSelect, selectedMenu }) => {
     { id: 'Policy', label: '운영 정책' },
     { id: 'Feature', label: '워케이션 특징' },
   ];
-
-  useEffect(() => {
-    setIsVerified(false); // 진입 시 진위확인 초기화
-  }, []);
 
   return (
     <MenuContainer>
@@ -34,7 +28,7 @@ const Menu = ({ onMenuSelect, selectedMenu }) => {
           <FolderIcon />
           <MenuLabel>호스트 신청</MenuLabel>
         </MenuItem>
-        {isVerified
+        {isValidate
           ? menuItems.map((item) => (
               <MenuItem key={item.id} isActive={selectedMenu === item.id} onClick={() => onMenuSelect(item.id)}>
                 <FolderIcon />

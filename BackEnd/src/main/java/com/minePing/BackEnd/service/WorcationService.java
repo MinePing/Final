@@ -14,8 +14,10 @@ public interface WorcationService {
      */
     WorcationDto.Response create(WorcationDto.Request request);
 
-//    WorcationDto.Response SampleCreate(WorcationDto.Request request);
-
+    /**
+     * 임시 저장, 로직
+     */
+    WorcationDto.Response tmpSave(WorcationDto.Request request);
     /**
      * 특정 ID의 워케이션 상세 정보를 조회한다.
      */
@@ -25,6 +27,11 @@ public interface WorcationService {
      * 워케이션 전체 목록(간단 요약) 조회
      */
     List<WorcationDto.Response> getAll();
+
+    /**
+     * 워케이션 내 목록(간단 요약) 조회
+     */
+    List<WorcationDto.Response> getMyListALl(Long id);
 
     /**
      * 특정 워케이션을 수정하고, 수정된 DTO 응답을 반환한다.
@@ -51,5 +58,6 @@ public interface WorcationService {
 //    String generatePresignedUrl(String filename);
 
     String uploadWithoutWorcation(MultipartFile file);
+
 
 }

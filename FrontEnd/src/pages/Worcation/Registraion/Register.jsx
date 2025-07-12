@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Menu from '../../../components/worcation/Register/Menu.jsx';
 import ApplicationForm from '../../../components/worcation/Register/Form/ApplicationForm.jsx';
@@ -12,417 +12,335 @@ import FeatureForm from '../../../components/worcation/Register/Form/FeatureForm
 import { BtnWhiteYellowBorder } from '../../../styles/Button.styles.js';
 import Swal from 'sweetalert2';
 import SwalStyles from '../../../styles/SwalStyles.js';
-import useBusinessStore from '../../../store/useBusinessStore.js';
-import useWorcationStore from '../../../store/useWorcationStore';
-import useAuthStore from '../../../store/authStore.js';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import useWorcationStore from '../../../store/useWorcationStore.js';
 import { worcationService } from '../../../api/worcations.js';
+import useAuthStore from '../../../store/authStore.js';
+import { useLocation, useParams } from 'react-router-dom';
 
 const Register = () => {
-  const [selectedMenu, setSelectedMenu] = useState('Application');
-  const isNonNull = useWorcationStore((state) => state.isNonNull());
+  const location = useLocation();
   const { worcation_no } = useParams();
-  const isVerified = useBusinessStore((state) => state.isVerified);
-  const setIsVerified = useBusinessStore((state) => state.setIsVerified);
-  const resetStore = useWorcationStore((state) => state.reset);
-  const navigate = useNavigate();
+  const worcation = location.state?.worcation;
 
-  useEffect(() => {
-    const fetchDataOrReset = async () => {
-      if (worcation_no) {
-        // 수정 모드
-        try {
-          const data = await worcationService.getDetail(worcation_no);
-          const store = useWorcationStore.getState();
-
-          // 각 스토어 슬라이스에 데이터 설정
-          store.setApplication({
-            worcation_name: data.worcation_name,
-            worcation_category: data.worcation_category,
-            licensee: data.licensee,
-            business_id: data.business_id,
-            open_date: data.open_date ? new Date(data.open_date) : null,
-          });
-          store.setInfo({
-            theme: data.worcation_thema,
-            maxPeople: data.max_people,
-            partnerPrice: data.partner_price,
-            nonPartnerPrice: data.non_partner_price,
-            phone: data.worcation_tel,
-          });
-          store.setDescription({ detailIntro: data.content });
-          store.setPhotos({
-            thumbnail: data.main_change_photo,
-            officePhotos: data.photos?.filter((p) => p.type === 'OFFICE').map((p) => p.change_name) || [],
-            stayPhotos: data.photos?.filter((p) => p.type === 'STAY').map((p) => p.change_name) || [],
-          });
-          store.setLocation({
-            address: data.worcation_address,
-            locationDescription: data.navigate,
-          });
-          store.setPolicy({
-            policyGuide: data.available_time,
-            refundPolicy: data.refund_policy,
-          });
-          store.setFeature({
-            locationType: data.location_type,
-            dominantColor: data.dominant_color,
-            spaceMood: data.space_mood,
-            bestFor: data.best_for,
-            activities: data.activities ? data.activities.split(',') : [],
-            accommodationType: data.accommodation_type,
-          });
-          store.setAmenities(data.amenities?.map((a) => a.amenity_no) || []);
-        } catch (error) {
-          console.error('워케이션 데이터 로딩 실패:', error);
-          Swal.fire('오류', '데이터를 불러오는 중 문제가 발생했습니다.', 'error');
-        }
-      } else {
-        // 등록 모드
-        resetStore();
-      }
-    };
-
-    fetchDataOrReset();
-  }, [worcation_no, resetStore]); // worcation_no가 바뀔 때마다 다시 실행
-
-  const handleSample = async () => {
-    if (!worcation_no) return;
-
-    try {
-      const data = await worcationService.getDetail(worcation_no);
-      const store = useWorcationStore.getState();
-
-      store.setApplication({
-        worcation_name: data.worcation_name,
-        worcation_category: data.worcation_category,
-        licensee: data.licensee,
-        business_id: data.business_id,
-        open_date: data.open_date ? new Date(data.open_date) : null,
-      });
-
-      store.setInfo({
-        theme: data.worcation_thema,
-        maxPeople: data.max_people,
-        partnerPrice: data.partner_price,
-        nonPartnerPrice: data.non_partner_price,
-        phone: data.worcation_tel,
-      });
-
-      store.setDescription({ detailIntro: data.content });
-
-      store.setPhotos({
-        thumbnail: data.main_change_photo,
-        officePhotos: data.photos?.filter((p) => p.type === 'OFFICE').map((p) => p.change_name) || [],
-        stayPhotos: data.photos?.filter((p) => p.type === 'STAY').map((p) => p.change_name) || [],
-      });
-
-      store.setLocation({
-        address: data.worcation_address,
-        locationDescription: data.navigate,
-      });
-
-      store.setPolicy({
-        policyGuide: data.available_time,
-        refundPolicy: data.refund_policy,
-      });
-
-      store.setFeature({
-        locationType: data.location_type,
-        dominantColor: data.dominant_color,
-        spaceMood: data.space_mood,
-        bestFor: data.best_for,
-        activities: data.activities ? data.activities.split(',') : [],
-        accommodationType: data.accommodation_type,
-      });
-
-      store.setAmenities(data.amenities?.map((a) => a.amenity_no) || []);
-    } catch (err) {
-      console.error('미리보기 데이터 로딩 실패:', err);
-      Swal.fire('불러오기 실패', '다시 시도해주세요.', 'error');
-    }
-  };
-
+  const [selectedMenu, setSelectedMenu] = useState('Application');
+  const [isLoading, setIsLoading] = useState(false);
+  const applicationFormRef = useRef();
+  const descriptionFormRef = useRef();
+  const photoFormRef = useRef();
+  const amenitiesFormRef = useRef();
+  const locationFormRef = useRef();
+  const policyFormRef = useRef();
+  const featureFormRef = useRef();
+  const getAll = useWorcationStore((state) => state.getAll);
+  const setAllData = useWorcationStore((state) => state.setAllData);
   const loginUser = useAuthStore((state) => state.loginUser);
 
   useEffect(() => {
-    console.log('로그인 유저 확인:', loginUser);
-  }, [loginUser]);
-
-  useEffect(() => {
-    setIsVerified(false); // 진입 시 진위확인 초기화
-  }, []);
-
-  useEffect(() => {
-    const init = async () => {
-      const store = useWorcationStore.getState();
-      if (!worcation_no) {
-        store.reset(); // 새 등록이면 초기화
-      } else {
-        await handleSample(); // 수정이면 데이터 불러오기
+    const initializeStore = async () => {
+      setIsLoading(true);
+      try {
+        if (worcation) {
+          // store에 기존 데이터 설정
+          setAllData({
+            application: {
+              worcation_name: worcation.worcation_name || '',
+              business_id: worcation.business_id || '',
+              licensee: worcation.licensee || '',
+              open_date: worcation.open_date || null,
+              companyType: worcation.worcation_category || 'Office',
+              partner_price: worcation.partner_price || '',
+              charge_amount: worcation.charge_amount || '',
+              status: worcation.status || 'N',
+            },
+            info: {
+              theme: worcation.worcation_thema || '',
+              maxPeople: worcation.max_people || '',
+              price: worcation.non_partner_price || '',
+              tel: worcation.worcation_tel || '',
+            },
+            description: {
+              detailIntro: worcation.content || '',
+            },
+            location: {
+              address: worcation.worcation_address || '',
+              navigate: worcation.navigate || '',
+            },
+            policy: {
+              availableTime: worcation.available_time || '',
+              refundPolicy: worcation.refund_policy || '',
+            },
+            feature: {
+              locationType: worcation.location_type || '',
+              dominantColor: worcation.dominant_color || '',
+              spaceMood: worcation.space_mood || '',
+              bestFor: worcation.best_for || '',
+              activities: worcation.activities ? worcation.activities.split(',') : [],
+              accommodationType: worcation.accommodation_type || '',
+            },
+          });
+        } else if (worcation_no) {
+          const data = await worcationService.getDetail(worcation_no);
+          setAllData({
+            application: {
+              worcation_name: data.worcation_name || '',
+              business_id: data.business_id || '',
+              licensee: data.licensee || '',
+              open_date: data.open_date || null,
+              companyType: data.worcation_category || 'Office',
+              partner_price: data.partner_price || '',
+              charge_amount: data.charge_amount || '',
+              status: data.status || 'N',
+            },
+            info: {
+              theme: data.worcation_thema || '',
+              maxPeople: data.max_people || '',
+              price: data.non_partner_price || '',
+              tel: data.worcation_tel || '',
+            },
+            description: {
+              detailIntro: data.content || '',
+            },
+            location: {
+              address: data.worcation_address || '',
+              navigate: data.navigate || '',
+            },
+            policy: {
+              availableTime: data.available_time || '',
+              refundPolicy: data.refund_policy || '',
+            },
+            feature: {
+              locationType: data.location_type || '',
+              dominantColor: data.dominant_color || '',
+              spaceMood: data.space_mood || '',
+              bestFor: data.best_for || '',
+              activities: data.activities ? data.activities.split(',') : [],
+              accommodationType: data.accommodation_type || '',
+            },
+          });
+        }
+      } catch (error) {
+        console.error('워케이션 데이터 로드 실패:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    init();
-  }, []); //의존성 없이 최초 진입 시 1회만 실행
-  const handlePreview = async (worcation_no) => {
-    try {
-      const data = await worcationService.getDetail(worcation_no); // 현재 작성 중인 워케이션 데이터를 DTO로 변환
-      navigate(`/worcation/temp/preview/${worcation_no}`, { state: data }); // preview용 route로 이동
-    } catch (err) {
-      console.error('미리보기 실패:', err);
-      Swal.fire('미리보기 실패', '임시 저장 또는 등록 후 다시 시도해주세요.', 'error');
-    }
-  };
-
-  const toRequestDto = () => {
-    const loginUser = useAuthStore.getState().loginUser;
-    const {
-      application = {},
-      info = {},
-      description = {},
-      photos = {},
-      amenities = [],
-      location = {},
-      policy = {},
-      price = {},
-      feature = {},
-      status = 'N',
-    } = useWorcationStore.getState();
-
-    const photo_urls = [
-      ...(Array.isArray(photos.officePhotos) ? photos.officePhotos.filter(Boolean) : []),
-      ...(Array.isArray(photos.stayPhotos) ? photos.stayPhotos.filter(Boolean) : []),
-    ];
-
-    return {
-      worcation_name: application.worcation_name, // application에서 가져와야 함
-      worcation_category: application.worcation_category,
-      main_change_photo: photos.thumbnail,
-      worcation_thema: info.theme,
-      max_people: parseInt(info.maxPeople),
-      partner_price: parseInt(price.partnerPrice),
-      non_partner_price: parseInt(price.nonPartnerPrice),
-      worcation_address: location.address,
-      member_id: loginUser?.user_no,
-      licensee: application.licensee,
-      business_id: application.business_id,
-      worcation_tel: info.phone,
-
-      charge_amount: parseInt(info.chargeAmount), // info.chargeAmount 없으면 NaN
-      content: description.detailIntro,
-      navigate: location.locationDescription,
-      available_time: policy.policyGuide,
-      refund_policy: policy.refundPolicy,
-
-      open_date: application.open_date
-        ? new Date(application.open_date).toISOString().split('T')[0]
-        : new Date().toISOString().split('T')[0],
-
-      location_type: feature.locationType,
-      dominant_color: feature.dominantColor,
-      space_mood: feature.spaceMood,
-      best_for: feature.bestFor,
-      activities: feature.activities?.join(','),
-      accommodation_type: feature.accommodationType,
-
-      amenities: Array.isArray(amenities) ? amenities : [],
-      photo_urls: [...(photos.officePhotos || []), ...(photos.stayPhotos || [])],
-
-      status,
-    };
-  };
-  // const handleSave = () =>
-  //   Swal.fire({
-  //     title: '저장하시겠습니까?',
-  //     showCancelButton: true,
-  //     confirmButtonText: '저장',
-  //     cancelButtonText: '취소',
-  //     buttonsStyling: true,
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       console.log('저장');
-  //     }
-  //   });
-  const handleSave = async () => {
-    const result = await Swal.fire({
-      title: '임시 저장하시겠습니까?',
-      showCancelButton: true,
-      confirmButtonText: '저장',
-      cancelButtonText: '취소',
-    });
-
-    if (result.isConfirmed) {
-      try {
-        useWorcationStore.getState().setStatus('N');
-        const dto = toRequestDto();
-        if (worcation_no) {
-          await worcationService.update(worcation_no, dto);
-        } else {
-          await worcationService.save(dto);
-        }
-        Swal.fire('임시 저장되었습니다.', '', 'success');
-        navigate('/worcation/register-list');
-      } catch (error) {
-        console.error('임시 저장 실패:', error);
-        Swal.fire('임시 저장 실패', '다시 시도해주세요.', 'error');
-      }
-    }
-  };
-
-  const isBusinessValidated = useBusinessStore((state) => !!state.formData.businessId);
-
-  const handleSubmit = async () => {
-    const result = await Swal.fire({
-      title: '등록하시겠습니까?',
-      showCancelButton: true,
-      confirmButtonText: '등록',
-      cancelButtonText: '취소',
-    });
-    if (result.isConfirmed) {
-      try {
-        useWorcationStore.getState().setStatus('Y');
-        const dto = toRequestDto();
-        console.log(dto);
-        if (worcation_no) {
-          await worcationService.update(worcation_no, dto);
-        } else {
-          await worcationService.save(dto);
-        }
-        Swal.fire('등록 완료!', '', 'success');
-        navigate('/worcation/register-list');
-      } catch (error) {
-        console.error('등록 실패:', error);
-        Swal.fire('등록 실패', '다시 시도해주세요.', 'error');
-      }
-    }
-  };
-
-  useEffect(() => {
-    console.log('[DEBUG] isVerified:', isVerified);
-  }, [isVerified]);
+    initializeStore();
+  }, [worcation, worcation_no]); // 의존성 추가하여 데이터 변경 시 재실행
 
   const renderForm = () => {
     switch (selectedMenu) {
       case 'Application':
-        return <ApplicationForm />;
+        return <ApplicationForm ref={applicationFormRef} />;
       case 'Info':
         return <InfoForm />;
       case 'Description':
-        return <DescriptionForm />;
+        return <DescriptionForm ref={descriptionFormRef} />;
       case 'Photo':
-        return <PhotoForm />;
+        return <PhotoForm ref={photoFormRef} />;
       case 'Amenities':
-        return <AmenitiesForm />;
+        return <AmenitiesForm ref={amenitiesFormRef} />;
       case 'Location':
-        return <LocationForm />;
+        return <LocationForm ref={locationFormRef} />;
       case 'Policy':
-        return <PolicyForm />;
+        return <PolicyForm ref={policyFormRef} />;
       case 'Feature':
-        return <FeatureForm />;
+        return <FeatureForm ref={featureFormRef} />;
       default:
-        return <ApplicationForm />;
+        return <ApplicationForm ref={applicationFormRef} />;
+    }
+  };
+
+  function removeEmpty(obj) {
+    return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== '' && v !== null && v !== undefined));
+  }
+
+  function makePayload(allValues, loginUser) {
+    return removeEmpty({
+      worcation_name: allValues.application.worcation_name,
+      worcation_category: allValues.application.companyType,
+      main_change_photo: allValues.photos.mainPhoto,
+      worcation_thema: allValues.info.theme,
+      max_people: allValues.info.maxPeople,
+      partner_price: allValues.application.partnerPrice,
+      non_partner_price: allValues.info.price,
+      worcation_address: allValues.location.address,
+      member_id: loginUser?.user_no,
+      area_id: allValues.location.areaId,
+      status: allValues.application.status,
+
+      // Detail
+      licensee: allValues.application.licensee,
+      business_id: allValues.application.business_id,
+      worcation_tel: allValues.info.tel,
+      charge_amount: allValues.application.chargeAmount,
+      content: allValues.description.detailIntro,
+      navigate: allValues.location.navigate,
+      available_time: allValues.policy.availableTime,
+      refund_policy: allValues.policy.refundPolicy,
+      open_date: allValues.application.open_date
+        ? new Date(allValues.application.open_date).toISOString().slice(0, 10)
+        : undefined,
+
+      // Features
+      location_type: allValues.feature.locationType,
+      dominant_color: allValues.feature.dominantColor,
+      space_mood: allValues.feature.spaceMood,
+      best_for: allValues.feature.bestFor,
+      activities: Array.isArray(allValues.feature.activities)
+        ? allValues.feature.activities.join(',')
+        : allValues.feature.activities,
+      accommodation_type: allValues.feature.accommodationType,
+
+      // List
+      amenities: allValues.amenities,
+      photo_urls: allValues.photos.officePhotos,
+    });
+  }
+
+  // 파일 업로드 처리 함수
+  async function uploadPhotos(photos) {
+    const uploadedUrls = [];
+
+    for (const photo of photos) {
+      if (photo && photo.file && !photo.uploaded) {
+        try {
+          const imageUrl = await worcationService.uploadImage(photo.file);
+          uploadedUrls.push(imageUrl);
+        } catch (error) {
+          console.error('파일 업로드 실패:', error);
+          throw new Error('파일 업로드에 실패했습니다.');
+        }
+      } else if (photo && photo.uploaded) {
+        // 이미 업로드된 파일은 URL 그대로 사용
+        uploadedUrls.push(photo.url || photo);
+      }
+    }
+
+    return uploadedUrls;
+  }
+
+  async function showConfirmSwal(title) {
+    return await Swal.fire({
+      title,
+      showCancelButton: true,
+      confirmButtonText: '저장',
+      cancelButtonText: '취소',
+    });
+  }
+
+  const handleSave = async () => {
+    const allValues = getAll();
+    if (!allValues.application.business_id || !allValues.application.licensee) {
+      alert('사업자번호와 상호명을 입력해주세요.');
+      return;
+    }
+
+    try {
+      // 임시저장 시에는 사진 정보를 빈 배열로 전달 (File 객체는 서버에서 처리 불가)
+      const payload = makePayload(
+        {
+          ...allValues,
+          photos: {
+            mainPhoto: '',
+            officePhotos: [],
+            stayPhotos: [],
+          },
+        },
+        loginUser
+      );
+
+      const tmp = await showConfirmSwal('임시 저장하시겠습니까?');
+      if (tmp.isConfirmed) {
+        await worcationService.saveTmpWorcation(payload);
+        Swal.fire('임시 저장되었습니다.', '', 'success');
+      }
+    } catch (error) {
+      Swal.fire('저장에 실패하였습니다.', error.message, 'error');
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!applicationFormRef.current?.isValid) {
+      alert('사업자 정보(기본 정보)를 올바르게 입력해주세요.');
+      return;
+    }
+
+    try {
+      // 자동 진위확인 수행
+      const isBusinessValid = await applicationFormRef.current.autoCheckBusiness();
+      if (!isBusinessValid) {
+        Swal.fire('사업자 정보 확인 실패', '사업자 정보를 다시 확인해주세요.', 'error');
+        return;
+      }
+
+      const allValues = getAll();
+
+      // 최종 등록 시에만 사진 업로드 처리
+      const officePhotoUrls = await uploadPhotos(allValues.photos.officePhotos || []);
+      const stayPhotoUrls = await uploadPhotos(allValues.photos.stayPhotos || []);
+
+      const payload = makePayload(
+        {
+          ...allValues,
+          photos: {
+            ...allValues.photos,
+            officePhotos: officePhotoUrls,
+            stayPhotos: stayPhotoUrls,
+          },
+        },
+        loginUser
+      );
+
+      // 수정 모드인지 확인 (미등록 목록에서는 등록 모드로 처리)
+      const isEditMode =
+        (worcation || worcation_no) && (worcation?.status === 'Y' || allValues.application.status === 'Y');
+      const confirmMessage = isEditMode ? '수정하시겠습니까?' : '등록하시겠습니까?';
+      const successMessage = isEditMode ? '수정되었습니다.' : '등록되었습니다.';
+
+      const res = await showConfirmSwal(confirmMessage);
+      if (res.isConfirmed) {
+        if (isEditMode) {
+          // 수정 모드: PATCH API 호출
+          const targetWorcationNo = worcation?.worcation_no || worcation_no;
+          await worcationService.update(targetWorcationNo, payload);
+        } else {
+          // 새로 등록 모드: POST API 호출
+          await worcationService.save(payload);
+        }
+        Swal.fire(successMessage, '', 'success');
+      }
+    } catch (error) {
+      Swal.fire('처리에 실패하였습니다.', error.message, 'error');
     }
   };
 
   return (
     <RegisterContainer>
       <SwalStyles />
-      <RegisterForm>
-        <MenuBar>
-          <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
-          <ContentContainer>
-            <BtnGroup>
-              <ActionButton
-                type="button"
-                onClick={async () => {
-                  await handleSample(); // 먼저 상태 초기화
-                  handlePreview(worcation_no); // 미리보기 이동
-                }}
-              >
-                미리 보기
-              </ActionButton>
-            </BtnGroup>
-            <RenderForm>{renderForm()}</RenderForm>
-          </ContentContainer>
-        </MenuBar>
-
-        {/* <BtnGroup>
-          <ActionButton
-            type="button"
-            onClick={isVerified ? handleSave : undefined}
-            disabled={!isVerified}
-            style={{
-              background: !isVerified ? '#AEAEAE' : '',
-              opacity: !isVerified ? 0.3 : 1,
-            }}
-          >
-            임시 저장
-          </ActionButton>
-
-          <ActionButton
-            type="button"
-            onClick={handleSubmit}
-            disabled={!(isNonNull && isBusinessValidated)}
-            style={{
-              background: !(isNonNull && isBusinessValidated) ? '#AEAEAE' : '',
-              opacity: !(isNonNull && isBusinessValidated) ? 0.3 : 1,
-            }}
-          >
-            등록
-          </ActionButton>
-        </BtnGroup> */}
-        <BtnGroup>
-          {isVerified ? (
+      {isLoading ? (
+        <div>데이터를 불러오는 중...</div>
+      ) : (
+        <RegisterForm>
+          <MenuBar>
+            <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
+            <ContentContainer>
+              <BtnGroup>
+                <ActionButton type="button">미리 보기</ActionButton>
+              </BtnGroup>
+              <RenderForm>{renderForm()}</RenderForm>
+            </ContentContainer>
+          </MenuBar>
+          <BtnGroup>
             <ActionButton type="button" onClick={handleSave}>
               임시 저장
             </ActionButton>
-          ) : (
-            <ActionButton type="button" disabled style={{ background: '#AEAEAE' }}>
-              임시 저장
+            <ActionButton type="button" onClick={handleSubmit}>
+              등록
             </ActionButton>
-          )}
-          {isNonNull ? (
-            <>
-              <ActionButton disabled={!isBusinessValidated}>등록</ActionButton>
-            </>
-          ) : (
-            <>
-              <ActionButton type="button" onClick={handleSubmit} style={{ opacity: 0.3 }}>
-                등록
-              </ActionButton>
-            </>
-          )}
-        </BtnGroup>
-
-        {/* <BtnGroup>
-          <ActionButton
-            type="button"
-            onClick={handleSave}
-            disabled={!isVerified}
-            style={{
-              background: !isVerified ? '#AEAEAE' : '',
-              opacity: !isVerified ? 0.3 : 1,
-              pointerEvents: !isVerified ? 'none' : 'auto',
-            }}
-          >
-            임시 저장
-          </ActionButton>
-
-          <ActionButton
-            type="button"
-            onClick={handleSubmit}
-            disabled={!isNonNull || !isBusinessValidated}
-            style={{
-              background: !isNonNull || !isBusinessValidated ? '#AEAEAE' : '',
-              opacity: !isNonNull || !isBusinessValidated ? 0.3 : 1,
-            }}
-          >
-            등록
-          </ActionButton>
-        </BtnGroup> */}
-      </RegisterForm>
+          </BtnGroup>
+        </RegisterForm>
+      )}
     </RegisterContainer>
   );
 };

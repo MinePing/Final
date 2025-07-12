@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle, useEffect } from 'react';
 import styled from 'styled-components';
 import { InputLightGray } from '../../../../styles/Input.styles';
 import CustomSelect from '../../../../components/common/Select';
@@ -6,24 +6,25 @@ import NumberInput from '../../../common/NumberInput';
 import CustomTextArea from '../../../common/TextArea';
 import { ButtonBorder } from '../../../../styles/Button.styles';
 import useWorcationStore from '../../../../store/useWorcationStore';
+import { useValidation } from '../../../../hooks/useValidation';
+import { Controller } from 'react-hook-form';
 
-// const Form = () => {
-//   const [theme, setTheme] = useState('');
-//   const [maxPeople, setMaxPeople] = useState('');
-//   const [phone, setPhone] = useState('');
-//   const [price, setPrice] = useState('');
-//   const [policy, setPolicy] = useState('');
-
-//   const themeOptions = [
-//     { value: 'modern', label: '모던 스타일' },
-//     { value: 'classic', label: '클래식' },
-//     { value: 'industrial', label: '인더스트리얼' },
-//     { value: 'minimal', label: '미니멀' },
-//     { value: 'natural', label: '내추럴' },
-//   ];
-const Form = () => {
+const InfoForm = forwardRef((_, ref) => {
   const info = useWorcationStore((state) => state.info);
   const setInfo = useWorcationStore((state) => state.setInfo);
+  const { register, control, getValues, isValid } = useValidation(info);
+
+  useImperativeHandle(ref, () => ({
+    getValues,
+    isValid,
+  }));
+
+  // 폼 언마운트 시 zustand에 저장
+  useEffect(() => {
+    return () => {
+      setInfo(getValues());
+    };
+  }, []);
 
   const themeOptions = [
     { value: 'modern', label: '모던' },
@@ -32,6 +33,7 @@ const Form = () => {
     { value: 'urban_nature', label: '도심 속 자연' },
     { value: 'camping', label: '캠핑 스타일' },
   ];
+
   return (
     <Body>
       <Title>기본 정보를 입력해주세요.</Title>
@@ -40,22 +42,38 @@ const Form = () => {
           <TR>
             <TH>업체 테마</TH>
             <TD>
-              <CustomSelect
-                options={themeOptions}
-                value={info.theme}
-                onChange={(e) => setInfo({ theme: e.target.value })}
-                // onChange={(e) => setTheme(e.target.value)}
+              <Controller
+                name="theme"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    options={themeOptions}
+                    value={field.value || ''}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setInfo({ theme: e.target.value });
+                    }}
+                  />
+                )}
               />
             </TD>
           </TR>
           <TR>
             <TH>최대 인원</TH>
             <TD>
-              <NumberInput
-                value={info.maxPeople}
-                // onChange={setMaxPeople}
-                onChange={(val) => setInfo({ maxPeople: val })}
-                format={false}
+              <Controller
+                name="maxPeople"
+                control={control}
+                render={({ field }) => (
+                  <NumberInput
+                    value={field.value || ''}
+                    onChange={(val) => {
+                      field.onChange(val);
+                      setInfo({ maxPeople: val });
+                    }}
+                    format={false}
+                  />
+                )}
               />
             </TD>
           </TR>
@@ -63,8 +81,9 @@ const Form = () => {
             <TH>연락처</TH>
             <TD>
               <InputLightGray
-                value={info.phone}
-                onChange={(e) => setInfo({ phone: e.target.value })}
+                {...register('tel', {
+                  onChange: (e) => setInfo({ tel: e.target.value }),
+                })}
                 placeholder="연락처를 입력해주세요"
               />
             </TD>
@@ -72,22 +91,38 @@ const Form = () => {
           <TR>
             <TH>비제휴 가격</TH>
             <TD>
-              <NumberInput
-                value={info.nonPartnerPrice}
-                // onChange={setPrice}
-                onChange={(val) => setInfo({ nonPartnerPrice: val })}
-                format={true}
+              <Controller
+                name="price"
+                control={control}
+                render={({ field }) => (
+                  <NumberInput
+                    value={field.value || ''}
+                    onChange={(val) => {
+                      field.onChange(val);
+                      setInfo({ price: val });
+                    }}
+                    format={true}
+                  />
+                )}
               />
             </TD>
           </TR>
           <TR>
-            <TH>제휴 가격</TH>
+            <TH>제휴 정책</TH>
             <TD>
-              <NumberInput
-                value={info.partnerPrice}
-                // onChange={(e) => setPolicy(e.target.value)}
-                onChange={(val) => setInfo({ partnerPrice: val })}
-                format={true}
+              <Controller
+                name="policy"
+                control={control}
+                render={({ field }) => (
+                  <CustomTextArea
+                    value={field.value || ''}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setInfo({ policy: e.target.value });
+                    }}
+                    rows={3}
+                  />
+                )}
               />
             </TD>
           </TR>
@@ -95,9 +130,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
+export default InfoForm;
 
 const Body = styled.div`
   gap: 40px;
@@ -144,4 +179,9 @@ const ButtonYellow = styled(ButtonBorder)`
   height: 30px;
   font-size: ${({ theme }) => theme.fontSizes.base};
   margin-left: 50px;
+`;
+
+const ErrorMessage = styled.span`
+  color: ${({ theme }) => theme.colors.error};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
 `;

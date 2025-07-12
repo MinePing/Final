@@ -1,25 +1,35 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle, useEffect } from 'react';
 import styled from 'styled-components';
 import CustomTextArea from '../../../common/TextArea.jsx';
 import useWorcationStore from '../../../../store/useWorcationStore';
 
-const Form = () => {
-  // const [checkinPeriod, setCheckinPeriod] = useState('AM');
-  // const [checkinHour, setCheckinHour] = useState('9');
-  // const [checkinMinute, setCheckinMinute] = useState('00');
-  // const [checkoutPeriod, setCheckoutPeriod] = useState('AM');
-  // const [checkoutHour, setCheckoutHour] = useState('11');
-  // const [checkoutMinute, setCheckoutMinute] = useState('00');
-
-  // const [officeStartPeriod, setOfficeStartPeriod] = useState('AM');
-  // const [officeStartHour, setOfficeStartHour] = useState('9');
-  // const [officeStartMinute, setOfficeStartMinute] = useState('00');
-  // const [officeEndPeriod, setOfficeEndPeriod] = useState('PM');
-  // const [officeEndHour, setOfficeEndHour] = useState('6');
-  // const [officeEndMinute, setOfficeEndMinute] = useState('00');
-
+const PolicyForm = forwardRef((props, ref) => {
   const policy = useWorcationStore((state) => state.policy);
   const setPolicy = useWorcationStore((state) => state.setPolicy);
+
+  useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
+
+  // store의 policy 값이 변경될 때마다 동기화 (무한 루프 방지)
+  useEffect(() => {
+    // store에 이미 값이 있으면 그대로 사용, 없으면 기본값으로 초기화
+    if (policy.checkinHour === undefined || policy.refundPolicy === undefined) {
+      setPolicy({
+        checkinPeriod: policy.checkinPeriod || 'AM',
+        checkinHour: policy.checkinHour || '9',
+        checkinMinute: policy.checkinMinute || '00',
+        checkoutPeriod: policy.checkoutPeriod || 'AM',
+        checkoutHour: policy.checkoutHour || '11',
+        checkoutMinute: policy.checkoutMinute || '00',
+        officeStartPeriod: policy.officeStartPeriod || 'AM',
+        officeStartHour: policy.officeStartHour || '9',
+        officeStartMinute: policy.officeStartMinute || '00',
+        officeEndPeriod: policy.officeEndPeriod || 'PM',
+        officeEndHour: policy.officeEndHour || '6',
+        officeEndMinute: policy.officeEndMinute || '00',
+        refundPolicy: policy.refundPolicy || '',
+      });
+    }
+  }, []); // 마운트 시에만 실행
 
   const handleChange = (field) => (e) => {
     setPolicy({ [field]: e.target.value });
@@ -37,9 +47,7 @@ const Form = () => {
                   type="number"
                   min="1"
                   max="12"
-                  // value={checkinHour}
-                  // onChange={(e) => setCheckinHour(e.target.value)}
-                  value={policy.checkinHour}
+                  value={policy.checkinHour || ''}
                   onChange={handleChange('checkinHour')}
                 />
                 <TimeSeparator>:</TimeSeparator>
@@ -47,13 +55,11 @@ const Form = () => {
                   type="number"
                   min="0"
                   max="59"
-                  // value={checkinMinute}
-                  // onChange={(e) => setCheckinMinute(e.target.value)}
-                  value={policy.checkinMinute}
+                  value={policy.checkinMinute || ''}
                   onChange={handleChange('checkinMinute')}
                 />
-                {/* <Select value={checkinPeriod} onChange={(e) => setCheckinPeriod(e.target.value)}> */}{' '}
-                <Select value={policy.checkinPeriod} onChange={handleChange('checkinPeriod')}>
+
+                <Select value={policy.checkinPeriod || 'AM'} onChange={handleChange('checkinPeriod')}>
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
                 </Select>
@@ -66,9 +72,7 @@ const Form = () => {
                   type="number"
                   min="1"
                   max="12"
-                  // value={officeStartHour}
-                  // onChange={(e) => setOfficeStartHour(e.target.value)}
-                  value={policy.officeStartHour}
+                  value={policy.officeStartHour || ''}
                   onChange={handleChange('officeStartHour')}
                 />
                 <TimeSeparator>:</TimeSeparator>
@@ -76,13 +80,11 @@ const Form = () => {
                   type="number"
                   min="0"
                   max="59"
-                  // value={officeStartMinute}
-                  // onChange={(e) => setOfficeStartMinute(e.target.value)}
-                  value={policy.officeStartMinute}
+                  value={policy.officeStartMinute || ''}
                   onChange={handleChange('officeStartMinute')}
                 />
-                {/* <Select value={officeStartPeriod} onChange={(e) => setOfficeStartPeriod(e.target.value)}> */}
-                <Select value={policy.officeStartPeriod} onChange={handleChange('officeStartPeriod')}>
+
+                <Select value={policy.officeStartPeriod || 'AM'} onChange={handleChange('officeStartPeriod')}>
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
                 </Select>
@@ -98,9 +100,7 @@ const Form = () => {
                   type="number"
                   min="1"
                   max="12"
-                  // value={checkoutHour}
-                  // onChange={(e) => setCheckoutHour(e.target.value)}
-                  value={policy.checkoutHour}
+                  value={policy.checkoutHour || ''}
                   onChange={handleChange('checkoutHour')}
                 />
                 <TimeSeparator>:</TimeSeparator>
@@ -108,13 +108,11 @@ const Form = () => {
                   type="number"
                   min="0"
                   max="59"
-                  // value={checkoutMinute}
-                  // onChange={(e) => setCheckoutMinute(e.target.value)}
-                  value={policy.checkoutMinute}
+                  value={policy.checkoutMinute || ''}
                   onChange={handleChange('checkoutMinute')}
                 />
-                {/* <Select value={checkoutPeriod} onChange={(e) => setCheckoutPeriod(e.target.value)}> */}
-                <Select value={policy.checkoutPeriod} onChange={handleChange('checkoutPeriod')}>
+
+                <Select value={policy.checkoutPeriod || 'AM'} onChange={handleChange('checkoutPeriod')}>
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
                 </Select>
@@ -127,9 +125,7 @@ const Form = () => {
                   type="number"
                   min="1"
                   max="12"
-                  // value={officeEndHour}
-                  // onChange={(e) => setOfficeEndHour(e.target.value)}
-                  value={policy.officeEndHour}
+                  value={policy.officeEndHour || ''}
                   onChange={handleChange('officeEndHour')}
                 />
                 <TimeSeparator>:</TimeSeparator>
@@ -137,13 +133,11 @@ const Form = () => {
                   type="number"
                   min="0"
                   max="59"
-                  // value={officeEndMinute}
-                  // onChange={(e) => setOfficeEndMinute(e.target.value)}
-                  value={policy.officeEndMinute}
+                  value={policy.officeEndMinute || ''}
                   onChange={handleChange('officeEndMinute')}
                 />
-                {/* <Select value={officeEndPeriod} onChange={(e) => setOfficeEndPeriod(e.target.value)}> */}
-                <Select value={policy.officeEndPeriod} onChange={handleChange('officeEndPeriod')}>
+
+                <Select value={policy.officeEndPeriod || 'PM'} onChange={handleChange('officeEndPeriod')}>
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
                 </Select>
@@ -156,7 +150,7 @@ const Form = () => {
             <TD colSpan={3} style={{ display: 'flex', justifyContent: 'flex-start' }}>
               <CustomTextArea
                 rows={7}
-                value={policy.refundPolicy}
+                value={policy.refundPolicy || ''}
                 onChange={handleChange('refundPolicy')}
                 placeholder="표준 환불 정책 : 일반적인 5일 전 취소 (Moderate)
 일반(Moderate)​: 체크인 5일 전까지 취소할 경우 전액 환불(수수료 포함)
@@ -170,9 +164,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
+export default PolicyForm;
 
 const Body = styled.div`
   gap: ${({ theme }) => theme.spacing.s8};

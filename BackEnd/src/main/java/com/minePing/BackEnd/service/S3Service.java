@@ -45,10 +45,27 @@ public class S3Service {
             throw new IllegalArgumentException("이미지 파일만 업로드 가능합니다.");
         }
 
+        // 파일 확장자 검증
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || originalFilename.isEmpty()) {
+            throw new IllegalArgumentException("파일명이 없습니다.");
+        }
+        
+        String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+        String[] allowedExtensions = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
+        boolean isValidExtension = false;
+        for (String allowedExt : allowedExtensions) {
+            if (extension.equals(allowedExt)) {
+                isValidExtension = true;
+                break;
+            }
+        }
+        if (!isValidExtension) {
+            throw new IllegalArgumentException("허용되지 않는 파일 형식입니다. (jpg, jpeg, png, gif, webp만 가능)");
+        }
+
         try {
-            // 파일명 생성
-            String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            // 파일명 생성 (원본 확장자 유지)
             String fileName = UUID.randomUUID().toString() + extension;
 
             // 메타데이터 설정

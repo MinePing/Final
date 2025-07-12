@@ -15,29 +15,44 @@ const businessValidationSchema = yup.object().shape({
     .required('사업자등록번호를 입력해주세요.'),
 });
 
-export const useValidation = () => {
+export const useValidation = (defaultValues = {}) => {
   const {
-    register,
-    control,
-    getValues,
-    setValue,
-    formState: { errors, isSubmitting },
-    watch,
-    reset,
+    register, // input 연결
+    control, // Controller용
+    getValues, // 값 가져오기
+    setValue, // 값 설정
+    reset, // 폼 리셋
+    handleSubmit, // 제출 핸들러
+    formState: { errors, isSubmitting, isValid }, // 상태값들
+    watch, // 값 실시간 감시
   } = useForm({
-    resolver: yupResolver(businessValidationSchema),
-    mode: 'onChange',
+    resolver: yupResolver(businessValidationSchema), // yup 유효성 연결
+    mode: 'onChange', // 값이 바뀔 때마다 유효성 검사
+    defaultValues, // 초기값
   });
+
+  // 폼 전체 데이터 반환
+  const getFormData = () => getValues();
+
+  // 특정 필드 값 반환
+  const getFieldValue = (field) => getValues(field);
+
+  // 폼 리셋
+  const resetForm = (values = defaultValues) => reset(values);
 
   return {
     register,
     control,
     getValues,
     setValue,
+    reset: resetForm,
+    handleSubmit,
     errors,
     isSubmitting,
+    isValid,
     watch,
-    reset,
+    getFormData,
+    getFieldValue,
   };
 };
 

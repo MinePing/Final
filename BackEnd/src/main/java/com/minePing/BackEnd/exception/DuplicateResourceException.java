@@ -16,4 +16,8 @@ public class DuplicateResourceException extends BaseException {
     public DuplicateResourceException(ErrorCode errorCode, String message, Throwable cause) {
         super(ErrorCode.DUPLICATE_RESOURCE, message, cause);
     }
+
+    public DuplicateResourceException(String message) {
+        super(ErrorCode.DUPLICATE_RESOURCE, message);
+    }
 }

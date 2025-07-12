@@ -2,171 +2,133 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+const initialState = {
+  // 1. 신청 정보
+  application: {
+    companyNo: '',
+    businessName: '',
+    ownerName: '',
+    tel: '',
+    worcation_name: '',
+    companyType: '',
+    business_id: '',
+    licensee: '',
+    open_date: '',
+  },
+  // 2. 기본 정보
+  info: {
+    category: '',
+    intro: '',
+    theme: '',
+    maxPeople: '',
+    tel: '',
+    price: '',
+    policy: '',
+  },
+  // 3. 설명/소개
+  description: {
+    detailIntro: '',
+  },
+  // 4. 사진
+  photos: {
+    officePhotos: [],
+    stayPhotos: [],
+  },
+  // 5. 편의시설
+  amenities: [],
+  // 6. 위치
+  location: {
+    address: '',
+    locationDescription: '',
+    navigate: '',
+  },
+  // 7. 정책
+  policy: {
+    refundPolicy: '',
+    notice: '',
+    checkinPeriod: 'AM',
+    checkinHour: '9',
+    checkinMinute: '00',
+    checkoutPeriod: 'AM',
+    checkoutHour: '11',
+    checkoutMinute: '00',
+    officeStartPeriod: 'AM',
+    officeStartHour: '9',
+    officeStartMinute: '00',
+    officeEndPeriod: 'PM',
+    officeEndHour: '6',
+    officeEndMinute: '00',
+    policyGuide: '',
+  },
+  // 8. 특징
+  feature: {
+    locationType: '',
+    dominantColor: '',
+    spaceMood: '',
+    bestFor: '',
+    activities: [],
+    accommodationType: '',
+  },
+};
+
 const useWorcationStore = create(
   persist(
     (set, get) => ({
-      reset: () =>
-        set({
-          application: {
-            worcation_name: null,
-            worcation_category: 'Office',
-            licensee: null,
-            business_id: null,
-            open_date: null,
-          },
-          info: {
-            theme: null,
-            maxPeople: null,
-            partnerPrice: null,
-            nonPartnerPrice: null,
-            phone: null,
-          },
-          description: {
-            detailIntro: null,
-          },
-          photos: {
-            thumbnail: null,
-            officePhotos: [],
-            stayPhotos: [],
-          },
-          location: {
-            address: null,
-            locationDescription: null,
-          },
-          policy: {
-            policyGuide: null,
-            refundPolicy: null,
-          },
-          feature: {
-            locationType: null,
-            dominantColor: null,
-            spaceMood: null,
-            bestFor: null,
-            activities: [],
-            accommodationType: null,
-          },
-          amenities: [],
-        }),
-      // 1. 신청 정보
-      application: {
-        business_id: null,
-        worcation_name: null,
-        licensee: null,
-        isVerified: false,
-        open_date: null,
-        worcation_category: 'Office',
-      },
-      setApplication: (data) => set((state) => ({ application: { ...state.application, ...data } })),
-      // 2. 기본 정보
-      info: {
-        phone: null,
-        category: null,
-        theme: null,
-      },
+      ...initialState,
+
+      // 각 섹션별 setter
+      setApplication: (data) => set({ application: { ...get().application, ...data } }),
       setInfo: (data) => {
-        const sanitized = {
-          ...data,
-          category: data.category === null ? null : data.category,
-        };
-        set((state) => ({ info: { ...state.info, ...sanitized } }));
+        const newInfo = typeof data === 'function' ? data(get().info) : { ...get().info, ...data };
+        set({ info: newInfo });
       },
+      setDescription: (data) => set({ description: { ...get().description, ...data } }),
+      setPhotos: (data) => set({ photos: { ...get().photos, ...data } }),
+      setAmenities: (data) => set({ amenities: data }),
+      setLocation: (data) => set({ location: { ...get().location, ...data } }),
+      setPolicy: (data) => set({ policy: { ...get().policy, ...data } }),
+      setFeature: (data) => set({ feature: { ...get().feature, ...data } }),
 
-      // 3. 설명/소개
-      description: {
-        detailIntro: null,
-      },
-      setDescription: (data) => set((state) => ({ description: { ...state.description, ...data } })),
+      // 전체 초기화
+      resetAll: () => set(initialState),
 
-      // 4. 사진
-      photos: {
-        thumbnail: null, // 섬네일 이미지
-        officePhotos: [],
-        stayPhotos: [],
-        detailImages: [],
-      },
-      setPhotos: (data) => set((state) => ({ photos: { ...state.photos, ...data } })),
-
-      // 5. 편의시설
-      amenities: [],
-      setAmenities: (data) => set(() => ({ amenities: data })),
-
-      // 6. 위치
-      // location: {
-      //   address: null,
-      //   lat: null,
-      //   lng: null,
-      // },
-      // setLocation: (data) => set((state) => ({ location: { ...state.location, ...data } })),
-
-      location: {
-        address: null,
-        locationDescription: null,
-      },
-      setLocation: (newLocation) => set({ location: newLocation }),
-      // 7. 정책
-      // policy: {
-      //   refundPolicy: '',
-      //   notice: '',
-      // },
-      // setPolicy: (data) => set((state) => ({ policy: { ...state.policy, ...data } })),
-
-      policy: {
-        refundPolicy: null,
-        notice: null,
-        checkinPeriod: null,
-        checkinHour: null,
-        checkinMinute: null,
-        checkoutPeriod: null,
-        checkoutHour: null,
-        checkoutMinute: null,
-        officeStartPeriod: null,
-        officeStartHour: null,
-        officeStartMinute: null,
-        officeEndPeriod: null,
-        officeEndHour: null,
-        officeEndMinute: null,
-        policyGuide: null,
-      },
-      setPolicy: (data) => set((state) => ({ policy: { ...state.policy, ...data } })),
-
-      // 8. 특징
-      feature: {
-        locationType: null,
-        dominantColor: null,
-        spaceMood: null,
-        bestFor: null,
-        activities: [],
-        accommodationType: null,
-      },
-      setFeature: (data) => set((state) => ({ feature: { ...state.feature, ...data } })),
-
-      //상태 (임시저장/등록 여부)
-      status: 'N', // 기본값은 'N' (임시저장 상태)
-      setStatus: (newStatus) => set(() => ({ status: newStatus })),
-
-      //가격
-      price: {
-        partnerPrice: null,
-        nonPartnerPrice: null,
-      },
-      setPrice: (data) =>
+      // 데이터 한 번에 설정 (수정 시 사용)
+      setAllData: (data) =>
         set((state) => ({
-          price: { ...state.price, ...data },
+          ...state,
+          ...data,
         })),
 
-      // 유효성 검사
+      // 유효성 검사 예시
       isNonNull: () => {
         const { application, info, location } = get();
-        return application.companyNo && info.worcationName && info.category && location.address;
+        return !!application.companyNo && !!info.worcationName && !!info.category && !!location.address;
       },
       isValidate: () => {
         const { info } = get();
-        return info.worcationName.length >= 2;
+        return info.worcationName.length >= 2; // 예시
+      },
+
+      // 모든 데이터 한 번에 반환
+      getAll: () => {
+        const state = get();
+        return {
+          application: state.application,
+          info: state.info,
+          description: state.description,
+          photos: state.photos,
+          amenities: state.amenities,
+          location: state.location,
+          policy: state.policy,
+          feature: state.feature,
+        };
       },
     }),
     {
-      name: 'worcation-store', // localStorage key 이름
-      getStorage: () => localStorage, // localStorage에 저장
+      name: 'worcation-store',
+      version: 1,
+      partialize: (state) => state, // 모든 상태를 저장
+      skipHydration: false,
     }
   )
 );

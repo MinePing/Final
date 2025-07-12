@@ -1,9 +1,13 @@
-import api from './axios';
-import { API_CONFIG, API_ENDPOINTS } from './config';
+import api, { fileApi } from './axios';
+import { API_CONFIG, API_ENDPOINTS, IMG_CONFIG } from './config';
 
 export const worcationService = {
   list: async () => {
     const response = await api.get(API_ENDPOINTS.WORCATION.LIST);
+    return response.data;
+  },
+  getMyWorcationList: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.LISTALL(user_no));
     return response.data;
   },
 
@@ -19,11 +23,11 @@ export const worcationService = {
     const response = await api.post(API_ENDPOINTS.WORCATION.SAVE, data);
     return response.data;
   },
-  // samplesave: async (data) => {
-  //   const response = await api.post(API_ENDPOINTS.WORCATION.SAMPLESAVE, data);
-  //   console.log('안녕2 : ' + data);
-  //   return response.data;
-  // },
+  saveTmpWorcation: async (payload) => {
+    const response = await api.post(API_ENDPOINTS.WORCATION.SAVETMP, payload);
+    return response.data;
+  },
+
   update: async (worcation_no, data) => {
     const response = await api.patch(API_ENDPOINTS.WORCATION.UPDATE(worcation_no), data);
     return response.data;
@@ -63,19 +67,19 @@ export const worcationService = {
   },
   getMyList: async (user_no) => {
     const response = await api.get(API_ENDPOINTS.WORCATION.GETMYLIST(user_no));
-
     return response.data;
   },
   uploadImage: async (file) => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await api.post(API_ENDPOINTS.WORCATION.UPLOADIMAGE(), formData, {
+    // fileApi 사용 (일관성 유지)
+    const response = await fileApi.post('/files/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
 
-    return response.data; // 서버에서 반환한 URL
+    return response.data.imageUrl; // 서버에서 반환한 imageUrl 필드
   },
 };

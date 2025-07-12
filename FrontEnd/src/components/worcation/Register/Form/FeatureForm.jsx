@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle, useEffect } from 'react';
 import styled from 'styled-components';
 import CustomSelect from '../../../common/Select';
 import Checkbox from '../../../common/Checkbox';
 import useWorcationStore from '../../../../store/useWorcationStore';
 
-const Form = () => {
+const FeatureForm = forwardRef((props, ref) => {
   const feature = useWorcationStore((state) => state.feature);
   const setFeature = useWorcationStore((state) => state.setFeature);
+
+  useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
+
+  // store의 feature 값이 변경될 때마다 동기화 (무한 루프 방지)
+  useEffect(() => {
+    // store에 이미 값이 있으면 그대로 사용, 없으면 기본값으로 초기화
+    if (feature.activities === undefined) {
+      setFeature({ activities: [] });
+    }
+  }, []); // 마운트 시에만 실행
 
   const locationTypeOptions = [
     { value: 'mountain', label: '산' },
@@ -62,7 +72,6 @@ const Form = () => {
       : [...feature.activities, value];
     setFeature({ activities: updated });
   };
-
   return (
     <Body>
       <Title>워케이션 특징을 선택하세요.</Title>
@@ -138,9 +147,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
+export default FeatureForm;
 
 const Body = styled.div`
   gap: 40px;
@@ -157,9 +166,8 @@ const Title = styled.div`
 
 const Table = styled.table`
   width: 100%;
-  border-spacing: 16px 12px;
+  border-spacing: 16px 12px; /* 셀 간격 조정 */
 `;
-
 const TBody = styled.tbody`
   display: flex;
   flex-direction: column;

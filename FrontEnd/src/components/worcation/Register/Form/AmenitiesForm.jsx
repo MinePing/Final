@@ -1,69 +1,24 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import { ButtonBorder } from '../../../../styles/Button.styles.js';
 import Checkbox from '../../../common/Checkbox';
 import useWorcationStore from '../../../../store/useWorcationStore.js';
 
-const Form = () => {
+const AmenitiesForm = forwardRef((props, ref) => {
   const selectedAmenities = useWorcationStore((state) => state.amenities);
-  const setAmenities = useWorcationStore((state) => state.setAmenities);
-  // const handleAmenityChange = (value) => {
-  //   setSelectedAmenities((prev) => {
-  //     if (prev.includes(value)) {
-  //       return prev.filter((item) => item !== value);
-  //     } else {
-  //       return [...prev, value];
-  //     }
-  //   });
-  // };
+  const setSelectedAmenities = useWorcationStore((state) => state.setAmenities);
+
+  useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
+
+  // 초기화 로직 제거 - 스토어에서 직접 값을 가져옴
 
   const handleAmenityChange = (value) => {
-    let updatedAmenities;
-
     if (selectedAmenities.includes(value)) {
-      updatedAmenities = selectedAmenities.filter((item) => item !== value);
+      setSelectedAmenities(selectedAmenities.filter((item) => item !== value));
     } else {
-      updatedAmenities = [...selectedAmenities, value];
+      setSelectedAmenities([...selectedAmenities, value]);
     }
-
-    setAmenities(updatedAmenities); // zustand 상태에 반영
   };
-
-  // const amenities = [
-  //   // office
-  //   { label: '고속 와이파이', value: 'high_speed_wifi', category: 'office' },
-  //   { label: '소회의실', value: 'small_meeting_room', category: 'office' },
-  //   { label: '화상회의 부스', value: 'video_conference_booth', category: 'office' },
-  //   { label: '프린터', value: 'printer', category: 'office' },
-  //   { label: '개인 업무 책상', value: 'personal_desk', category: 'office' },
-  //   { label: '멀티탭', value: 'power_strip', category: 'office' },
-
-  //   // stay
-  //   { label: '에어컨', value: 'air_conditioner', category: 'stay' },
-  //   { label: '조리공간', value: 'kitchen_area', category: 'stay' },
-  //   { label: '세탁기', value: 'washing_machine', category: 'stay' },
-  //   { label: '편의점 도보거리', value: 'convenience_store_nearby', category: 'stay' },
-  //   { label: '주차', value: 'parking', category: 'stay' },
-  //   { label: '청소 서비스', value: 'cleaning_service', category: 'stay' },
-
-  //   // relax
-  //   { label: '전용 테라스', value: 'private_terrace', category: 'relax' },
-  //   { label: '루프탑', value: 'rooftop', category: 'relax' },
-  //   { label: '피트니스', value: 'fitness', category: 'relax' },
-  //   { label: '자연 접근성', value: 'nature_accessibility', category: 'relax' },
-  //   { label: '요가 공간', value: 'yoga_space', category: 'relax' },
-
-  //   // safety
-  //   { label: '보안 도어락', value: 'secure_door_lock', category: 'safety' },
-  //   { label: 'CCTV', value: 'cctv', category: 'safety' },
-  //   { label: '전용 입구', value: 'private_entrance', category: 'safety' },
-  //   { label: '라커', value: 'locker', category: 'safety' },
-
-  //   // digital
-  //   { label: '무인 체크인', value: 'self_checkin', category: 'digital' },
-  //   { label: '모바일 컨시어지', value: 'mobile_concierge', category: 'digital' },
-  //   { label: '커뮤니티 기능', value: 'community_features', category: 'digital' },
-  // ];
 
   const amenities = [
     // office
@@ -73,7 +28,6 @@ const Form = () => {
     { label: '프린터', value: 4, category: 'office' },
     { label: '개인 업무 책상', value: 5, category: 'office' },
     { label: '멀티탭', value: 6, category: 'office' },
-
     // stay
     { label: '에어컨', value: 7, category: 'stay' },
     { label: '조리공간', value: 8, category: 'stay' },
@@ -81,20 +35,17 @@ const Form = () => {
     { label: '편의점 도보거리', value: 10, category: 'stay' },
     { label: '주차', value: 11, category: 'stay' },
     { label: '청소 서비스', value: 12, category: 'stay' },
-
     // relax
     { label: '전용 테라스', value: 13, category: 'relax' },
     { label: '루프탑', value: 14, category: 'relax' },
     { label: '피트니스', value: 15, category: 'relax' },
     { label: '자연 접근성', value: 16, category: 'relax' },
     { label: '요가 공간', value: 17, category: 'relax' },
-
     // safety
     { label: '보안 도어락', value: 18, category: 'safety' },
     { label: 'CCTV', value: 19, category: 'safety' },
     { label: '전용 입구', value: 20, category: 'safety' },
     { label: '라커', value: 21, category: 'safety' },
-
     // digital
     { label: '무인 체크인', value: 22, category: 'digital' },
     { label: '모바일 컨시어지', value: 23, category: 'digital' },
@@ -104,6 +55,15 @@ const Form = () => {
   const getAmenitiesByCategory = (category) => {
     return amenities.filter((item) => item.category === category);
   };
+
+  const categoryNames = {
+    office: '오피스 시설',
+    stay: '숙소 시설',
+    relax: '휴식 공간',
+    safety: '안전 시설',
+    digital: '디지털 서비스',
+  };
+
   return (
     <Body>
       <Title>편의시설을 선택해주세요.(다중 선택 가능)</Title>
@@ -131,110 +91,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
-
-const categoryNames = {
-  office: '오피스 시설',
-  stay: '숙소 시설',
-  relax: '휴식 공간',
-  safety: '안전 시설',
-  digital: '디지털 서비스',
-};
-
-//   return (
-//     <Body>
-//       <Title>편의시설을 선택해주세요.(다중 선택 가능)</Title>
-//       <Table>
-//         <TBody>
-//           <TR>
-//             <TH>오피스 시설</TH>
-//             <TD>
-//               <AmenitiesContainer>
-//                 {getAmenitiesByCategory('office').map((amenity) => (
-//                   <Checkbox
-//                     key={amenity.value}
-//                     id={amenity.value}
-//                     label={amenity.label}
-//                     checked={selectedAmenities.includes(amenity.value)}
-//                     onChange={() => handleAmenityChange(amenity.value)}
-//                   />
-//                 ))}
-//               </AmenitiesContainer>
-//             </TD>
-//           </TR>
-//           <TR>
-//             <TH>숙소 시설</TH>
-//             <TD>
-//               <AmenitiesContainer>
-//                 {getAmenitiesByCategory('stay').map((amenity) => (
-//                   <Checkbox
-//                     key={amenity.value}
-//                     id={amenity.value}
-//                     label={amenity.label}
-//                     checked={selectedAmenities.includes(amenity.value)}
-//                     onChange={() => handleAmenityChange(amenity.value)}
-//                   />
-//                 ))}
-//               </AmenitiesContainer>
-//             </TD>
-//           </TR>
-//           <TR>
-//             <TH>휴식 공간</TH>
-//             <TD>
-//               <AmenitiesContainer>
-//                 {getAmenitiesByCategory('relax').map((amenity) => (
-//                   <Checkbox
-//                     key={amenity.value}
-//                     id={amenity.value}
-//                     label={amenity.label}
-//                     checked={selectedAmenities.includes(amenity.value)}
-//                     onChange={() => handleAmenityChange(amenity.value)}
-//                   />
-//                 ))}
-//               </AmenitiesContainer>
-//             </TD>
-//           </TR>
-//           <TR>
-//             <TH>안전 시설</TH>
-//             <TD>
-//               <AmenitiesContainer>
-//                 {getAmenitiesByCategory('safety').map((amenity) => (
-//                   <Checkbox
-//                     key={amenity.value}
-//                     id={amenity.value}
-//                     label={amenity.label}
-//                     checked={selectedAmenities.includes(amenity.value)}
-//                     onChange={() => handleAmenityChange(amenity.value)}
-//                   />
-//                 ))}
-//               </AmenitiesContainer>
-//             </TD>
-//           </TR>
-//           <TR>
-//             <TH>디지털 서비스</TH>
-//             <TD>
-//               <AmenitiesContainer>
-//                 {getAmenitiesByCategory('digital').map((amenity) => (
-//                   <Checkbox
-//                     key={amenity.value}
-//                     id={amenity.value}
-//                     label={amenity.label}
-//                     checked={selectedAmenities.includes(amenity.value)}
-//                     onChange={() => handleAmenityChange(amenity.value)}
-//                   />
-//                 ))}
-//               </AmenitiesContainer>
-//             </TD>
-//           </TR>
-//         </TBody>
-//       </Table>
-//     </Body>
-//   );
-// };
-
-// export default Form;
+export default AmenitiesForm;
 
 const Body = styled.div`
   padding: 40px;

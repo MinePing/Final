@@ -28,6 +28,18 @@ public interface WorcationRepository extends JpaRepository<Worcation, Long>, Wor
            "LEFT JOIN FETCH w.worcationFeatures")
     List<Worcation> findAllWithBasicDetails();
     
+    // 모든 워케이션을 모든 관련 정보와 함께 한 번에 조회 (N+1 문제 해결)
+    @Query("SELECT DISTINCT w FROM Worcation w " +
+           "LEFT JOIN FETCH w.worcationDetail " +
+           "LEFT JOIN FETCH w.worcationFeatures " +
+           "LEFT JOIN FETCH w.worcationAmenities wa " +
+           "LEFT JOIN FETCH wa.amenity " +
+           "LEFT JOIN FETCH w.photos " +
+           "LEFT JOIN FETCH w.worcationPartners " +
+           "LEFT JOIN FETCH w.worcationApplications wa2 " +
+           "LEFT JOIN FETCH wa2.review")
+    List<Worcation> findAllWithAllDetails();
+    
     // 워케이션의 Amenities만 별도 조회
     @Query("SELECT w FROM Worcation w " +
            "LEFT JOIN FETCH w.worcationAmenities wa " +
@@ -69,5 +81,43 @@ public interface WorcationRepository extends JpaRepository<Worcation, Long>, Wor
     @Query("SELECT w.worcationNo FROM Worcation w WHERE w.member.userNo = :userNo")
     List<Long> findIdsByWriter(@Param("userNo") Long userNo);
 
+    // 임시저장: 사업자번호+status로 기존 워케이션 찾기
+    @Query("SELECT w FROM Worcation w JOIN w.worcationDetail d WHERE d.businessId = :businessId AND w.status = :status")
+    Optional<Worcation> findByBusinessIdAndStatus(@Param("businessId") String businessId, @Param("status") CommonEnums.Status status);
+
+    // 최종등록: 사업자번호+status로 중복 존재 여부 체크
+    @Query("SELECT COUNT(w) > 0 FROM Worcation w JOIN w.worcationDetail d WHERE d.businessId = :businessId AND w.status = :status")
+    boolean existsByBusinessIdAndStatus(@Param("businessId") String businessId, @Param("status") CommonEnums.Status status);
+
+    // 특정 사용자의 워케이션만 모든 관련 정보와 함께 조회 (최적화)
+    @Query("SELECT DISTINCT w FROM Worcation w " +
+           "LEFT JOIN FETCH w.worcationDetail " +
+           "LEFT JOIN FETCH w.worcationFeatures " +
+           "LEFT JOIN FETCH w.worcationAmenities wa " +
+           "LEFT JOIN FETCH wa.amenity " +
+           "LEFT JOIN FETCH w.photos " +
+           "LEFT JOIN FETCH w.worcationPartners " +
+           "LEFT JOIN FETCH w.worcationApplications wa2 " +
+           "LEFT JOIN FETCH wa2.review " +
+           "WHERE w.member.userNo = :userNo")
+    List<Worcation> findAllByUserNoWithAllDetails(@Param("userNo") Long userNo);
+
+    // 단일 워케이션을 모든 관련 정보와 함께 조회 (최적화)
+    @Query("SELECT DISTINCT w FROM Worcation w " +
+           "LEFT JOIN FETCH w.worcationDetail " +
+           "LEFT JOIN FETCH w.worcationFeatures " +
+           "LEFT JOIN FETCH w.worcationAmenities wa " +
+           "LEFT JOIN FETCH wa.amenity " +
+           "LEFT JOIN FETCH w.photos " +
+           "LEFT JOIN FETCH w.worcationPartners " +
+           "LEFT JOIN FETCH w.worcationApplications wa2 " +
+           "LEFT JOIN FETCH wa2.review " +
+           "WHERE w.worcationNo = :worcationNo")
+    Optional<Worcation> findByIdWithAllDetails(@Param("worcationNo") Long worcationNo);
+
+    // 워케이션 이름 목록 조회 (최적화)
+    @Query("SELECT w FROM Worcation w " +
+           "WHERE w.member.userNo = :userNo AND w.status = :status")
+    List<Worcation> findByMemberUserNoAndStatus(@Param("userNo") Long userNo, @Param("status") CommonEnums.Status status);
 
 }

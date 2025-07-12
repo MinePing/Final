@@ -1,9 +1,16 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-const ImageUploader = ({ label, onChange, onDelete }) => {
+const ImageUploader = ({ label, onChange, onDelete, previewUrl }) => {
   const [preview, setPreview] = useState(null);
   const fileInputRef = useRef(null);
+
+  // 외부에서 전달된 previewUrl이 있으면 사용
+  useEffect(() => {
+    if (previewUrl) {
+      setPreview(previewUrl);
+    }
+  }, [previewUrl]);
 
   const handleClick = () => {
     fileInputRef.current.click();

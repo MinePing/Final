@@ -134,6 +134,7 @@ function App() {
           {/* 🟡 Layout3: Footer 없음 */}
           <Route element={<Layout3 />}>
             <Route path="/worcation/register" element={<Register />} /> {/* 업체 등록 */}
+            <Route path="/worcation/edit/:worcation_no" element={<Register />} /> {/* 업체 수정 */}
             <Route path="/worcation/register/:worcation_no" element={<Register />} /> {/* 업체 스장 */}
             <Route path="/worcation/apply" element={<WorcationApply />} /> {/* 워케이션 신청 */}
             {/* 권한 설정한 페이지 */}
