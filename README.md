@@ -7,8 +7,8 @@ React와 Spring Boot를 활용한
 - 개발 기간: 2025-06-04 ~ 2025-07-18
 - 서비스 링크: [https://www.mineping.store](https://www.mineping.store)
 - 본 프로젝트의 구조를 더 자세히 알고 싶다면?
-    - [백엔드 README](./Backend/README.md)
-    - [프론트엔드 README](./FRONT.md)
+    - [백엔드 README](./BackEnd/README.md)
+    - [프론트엔드 README](./FrontEnd/README.md)
 
 ## 기술 스택
 `Design`
